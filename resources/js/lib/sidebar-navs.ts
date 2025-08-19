@@ -5,6 +5,7 @@ import {
     ListTodo,
     LucideProps,
     School,
+    UserStar,
 } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
@@ -22,7 +23,7 @@ export type NavItems = NavItem[];
 const adminSidebarNavs: NavItems = [
     {
         title: "Dashboard",
-        url: "/dashboard",
+        url: "/admin/dashboard",
         icon: Grid2X2,
         type: "item",
     },
@@ -33,19 +34,25 @@ const adminSidebarNavs: NavItems = [
     },
     {
         title: "Sekolah",
-        url: "/school",
+        url: "/admin/school",
         icon: School,
         type: "item",
     },
     {
         title: "Siswa",
-        url: "/student",
+        url: "/admin/student",
         icon: GraduationCap,
         type: "item",
     },
     {
+        title: "User",
+        url: "/admin/user",
+        icon: UserStar,
+        type: "item",
+    },
+    {
         title: "Kuis & Pertanyaan",
-        url: "/questionnaire",
+        url: "/admin/questionnaire",
         icon: ListTodo,
         type: "item",
     },
@@ -56,7 +63,7 @@ const adminSidebarNavs: NavItems = [
     },
     {
         title: "Hasil Kuis",
-        url: "/questionnaire-result",
+        url: "/admin/questionnaire-result",
         icon: LaptopMinimalCheck,
         type: "item",
     },
