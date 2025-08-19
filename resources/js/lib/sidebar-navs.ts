@@ -40,7 +40,7 @@ const adminSidebarNavs: NavItems = [
     },
     {
         title: "Siswa",
-        url: "/admin/student",
+        url: "/admin/participant",
         icon: GraduationCap,
         type: "item",
     },

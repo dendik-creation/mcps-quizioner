@@ -1,6 +1,6 @@
 import AppLayout from "@/partials/AppLayout";
 import { PageTitle } from "@/partials/PageTitle";
-import { SchoolShowProps } from "@/types/school";
+import { ParticipantIndexProps } from "@/types/participant";
 import {
     Table,
     TableBody,
@@ -11,8 +11,13 @@ import {
 } from "@/components/ui/table";
 import React from "react";
 import NotFoundInTable from "@/components/custom/NotFoundInTable";
+import { PaginatorBuilder } from "@/components/custom/FormElement";
 
-const SchoolShow = ({ title, description, school }: SchoolShowProps) => {
+const ParticipantIndex = ({
+    title,
+    description,
+    participants,
+}: ParticipantIndexProps) => {
     return (
         <AppLayout>
             <PageTitle title={title} description={description} />
@@ -31,18 +36,24 @@ const SchoolShow = ({ title, description, school }: SchoolShowProps) => {
                                 Nama Siswa
                             </TableHead>
                             <TableHead className="bg-amber-200 font-semibold">
+                                Asal Sekolah
+                            </TableHead>
+                            <TableHead className="bg-amber-200 font-semibold">
                                 Kelas
                             </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {school?.participants?.length ? (
-                            school?.participants.map((participant, idx) => (
+                        {participants.data.length ? (
+                            participants.data.map((participant, idx) => (
                                 <TableRow key={idx}>
                                     <TableCell>{idx + 1}</TableCell>
                                     <TableCell>{participant.nisn}</TableCell>
                                     <TableCell>
                                         {participant.fullname}
+                                    </TableCell>
+                                    <TableCell>
+                                        {participant.school?.name}
                                     </TableCell>
                                     <TableCell>{participant.class}</TableCell>
                                 </TableRow>
@@ -53,8 +64,16 @@ const SchoolShow = ({ title, description, school }: SchoolShowProps) => {
                     </TableBody>
                 </Table>
             </div>
+            {participants.total > participants.per_page && (
+                <PaginatorBuilder
+                    prevUrl={participants.prev_page_url ?? "#"}
+                    nextUrl={participants.next_page_url ?? "#"}
+                    currentPage={participants.current_page}
+                    totalPage={participants.last_page}
+                />
+            )}
         </AppLayout>
     );
 };
 
-export default SchoolShow;
+export default ParticipantIndex;

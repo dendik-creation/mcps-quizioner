@@ -11,7 +11,7 @@ use Inertia\Inertia;
 class SchoolsController extends Controller
 {
     public function index(){
-        $schools = Schools::all();
+        $schools = Schools::with('participants')->paginate(10);
         return Inertia::render('Admin/School/Index', [
             'title' => 'Daftar Sekolah',
             'description' => 'Kelola sekolah yang terdaftar untuk mengelompokkan siswa',

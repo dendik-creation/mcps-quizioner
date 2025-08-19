@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ParticipantController;
 use App\Http\Controllers\SchoolsController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\adminRole;
@@ -23,5 +24,7 @@ Route::middleware('auth')->group(function(){
         Route::get('/dashboard', [DashboardController::class, 'adminDashboard']);
         Route::resource('/user', UserController::class)->except(['show']);
         Route::resource('/school', SchoolsController::class)->except(['create', 'edit']);
+
+        Route::get('/participant', [ParticipantController::class, 'index']);
     });
 });

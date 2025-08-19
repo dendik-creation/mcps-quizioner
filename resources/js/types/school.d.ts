@@ -1,5 +1,5 @@
 import { Participant } from "@/types/participant";
-import { PageTitleProps } from "./global";
+import { PageTitleProps, PaginationData } from "./global";
 
 export type School = {
     id: number;
@@ -8,7 +8,7 @@ export type School = {
 };
 
 export type SchoolIndexProps = PageTitleProps & {
-    schools: School[];
+    schools: PaginationData<School>;
 };
 
 export type SchoolShowProps = PageTitleProps & {

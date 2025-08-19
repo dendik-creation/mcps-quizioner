@@ -16,7 +16,7 @@ import ConfirmDialog from "@/components/custom/ConfirmDialog";
 import NotFoundInTable from "@/components/custom/NotFoundInTable";
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { ErrorInput } from "@/components/custom/FormElement";
+import { ErrorInput, PaginatorBuilder } from "@/components/custom/FormElement";
 import { cn } from "@/lib/utils";
 
 const SchoolIndex = ({ title, description, schools }: SchoolIndexProps) => {
@@ -170,8 +170,8 @@ const SchoolIndex = ({ title, description, schools }: SchoolIndexProps) => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {schools.length ? (
-                            schools.map((school, idx) => (
+                        {schools.data.length ? (
+                            schools.data.map((school, idx) => (
                                 <TableRow key={school.id}>
                                     <TableCell>{idx + 1}</TableCell>
                                     <TableCell>{school.name}</TableCell>
@@ -232,6 +232,14 @@ const SchoolIndex = ({ title, description, schools }: SchoolIndexProps) => {
                     </TableBody>
                 </Table>
             </div>
+            {schools.total > schools.per_page && (
+                <PaginatorBuilder
+                    prevUrl={schools.prev_page_url ?? "#"}
+                    nextUrl={schools.next_page_url ?? "#"}
+                    currentPage={schools.current_page}
+                    totalPage={schools.last_page}
+                />
+            )}
         </AppLayout>
     );
 };
