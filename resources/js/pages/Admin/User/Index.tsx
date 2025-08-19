@@ -9,12 +9,12 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import React from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import NotFoundInTable from "@/components/custom/NotFoundInTable";
 import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/custom/ConfirmDialog";
 import { Link, router } from "@inertiajs/react";
+import React from "react";
 
 const UserIndex = ({ title, description, users }: UserIndexProps) => {
     const handleDeleteUser = (userId: number) => {
@@ -108,7 +108,7 @@ const UserIndex = ({ title, description, users }: UserIndexProps) => {
                                 </TableRow>
                             ))
                         ) : (
-                            <NotFoundInTable colSpan={3} />
+                            <NotFoundInTable colSpan={5} />
                         )}
                     </TableBody>
                 </Table>

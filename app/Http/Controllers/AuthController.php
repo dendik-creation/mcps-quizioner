@@ -25,12 +25,14 @@ class AuthController extends Controller
             return Inertia::location('/peneliti/dashboard');
         }
     }
+
     public function signInView()
     {
         return Inertia::render('Auth/SignIn', [
             'app_name' => config('app.name'),
         ]);
     }
+    
     public function signInStore(Request $request)
     {
         $credentials = $request->validate([
