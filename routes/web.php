@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ParticipantController;
+use App\Http\Controllers\QuestionnairesController;
 use App\Http\Controllers\SchoolsController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\adminRole;
@@ -27,7 +28,11 @@ Route::middleware('auth')->group(function(){
 
         Route::get('/participant', [ParticipantController::class, 'index']);
 
-        // 
+        Route::get('/questionnaire', [QuestionnairesController::class, 'adminIndex']);
+        Route::get('/questionnaire/create', [QuestionnairesController::class, 'adminCreate']);
+        Route::get('/questionnaire/{questionnaire_id}/edit', [QuestionnairesController::class, 'adminEdit']);
+        Route::put('/questionnaire/{questionnaire_id}', [QuestionnairesController::class, 'adminUpdate']);
+        Route::delete('/questionnaire/{questionnaire_id}', [QuestionnairesController::class, 'adminDestroy']);
 
         Route::get('/setting', [DashboardController::class, 'appSettingView']);
         Route::put('/setting', [DashboardController::class, 'appSettingUpdate']);
