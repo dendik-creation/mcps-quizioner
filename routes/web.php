@@ -26,5 +26,10 @@ Route::middleware('auth')->group(function(){
         Route::resource('/school', SchoolsController::class)->except(['create', 'edit']);
 
         Route::get('/participant', [ParticipantController::class, 'index']);
+
+        // 
+
+        Route::get('/setting', [DashboardController::class, 'appSettingView']);
+        Route::put('/setting', [DashboardController::class, 'appSettingUpdate']);
     });
 });

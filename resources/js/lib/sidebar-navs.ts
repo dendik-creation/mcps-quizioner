@@ -6,6 +6,7 @@ import {
     LucideProps,
     School,
     UserStar,
+    Wrench,
 } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
@@ -57,7 +58,7 @@ const adminSidebarNavs: NavItems = [
         type: "item",
     },
     {
-        title: "Hasil Kuisioner",
+        title: "Lainnya",
         type: "splitter",
         url: "#",
     },
@@ -65,6 +66,12 @@ const adminSidebarNavs: NavItems = [
         title: "Hasil Kuis",
         url: "/admin/questionnaire-result",
         icon: LaptopMinimalCheck,
+        type: "item",
+    },
+    {
+        title: "Pengaturan Aplikasi",
+        url: "/admin/setting",
+        icon: Wrench,
         type: "item",
     },
 ];
