@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('choices', function (Blueprint $table) {
             $table->id();
             $table->foreignId('question_id');
-            $table->string('choice',255);
+            $table->text('choice');
             $table->integer('point');
             $table->timestamps();
         });

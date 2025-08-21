@@ -30,7 +30,8 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import RichTextEditor from "@mantine/rte";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { SelectOption } from "@/types/global";
 
 type ErrorInputProps = {
@@ -276,26 +277,54 @@ export const MultiSelectSearchInput = ({
 
 export function RichTextEditorInput({
     content,
+    minHeight = 200,
     onChange,
 }: {
     content: string;
+    minHeight?: number;
     onChange: (value: string) => void;
 }) {
     return (
-        <RichTextEditor
-            value={content}
-            onChange={onChange}
-            sticky={true}
-            className="rounded-md border h-[400px] overflow-auto"
-            controls={[
-                ["bold", "italic", "underline"],
-                ["unorderedList", "orderedList"],
-                ["h1", "h2", "h3"],
-                ["sup", "sub"],
-                ["link", "image"],
-                ["clean"],
-            ]}
-        />
+        <div className="rounded-md border overflow-auto">
+            <CKEditor
+                editor={ClassicEditor}
+                data={content}
+                config={{
+                    toolbar: [
+                        "heading",
+                        "|",
+                        "bold",
+                        "italic",
+                        "underline",
+                        "link",
+                        "bulletedList",
+                        "numberedList",
+                        "blockQuote",
+                        "|",
+                        "insertTable",
+                        "imageUpload",
+                        "undo",
+                        "redo",
+                    ],
+                }}
+                onReady={(editor) => {
+                    const root = editor.editing.view.document.getRoot();
+                    if (root) {
+                        editor.editing.view.change((writer) => {
+                            writer.setStyle(
+                                "min-height",
+                                `${minHeight}px`,
+                                root
+                            );
+                        });
+                    }
+                }}
+                onChange={(_event, editor) => {
+                    const data = editor.getData();
+                    onChange(data);
+                }}
+            />
+        </div>
     );
 }
 
