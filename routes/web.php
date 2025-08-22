@@ -20,7 +20,7 @@ Route::middleware('guest')->group(function(){
     Route::post('/auth/register', [AuthController::class, 'registerStore']);
 });
 
-Route::middleware(['participant'])->group(function () {
+Route::middleware(['participantRole'])->group(function () {
     Route::get('/demo', [QuestionnairesController::class, 'demo'])->name('demo');
     Route::get('/kuisioner', [ParticipantController::class, 'kuisioner'])->name('kuisioner');
 });
@@ -37,8 +37,10 @@ Route::middleware('auth')->group(function(){
         //School
         Route::resource('/school', SchoolsController::class)->except(['create', 'edit']);
 
+        // Participant
         Route::get('/participant', [ParticipantController::class, 'index']);
 
+        // Questionares
         Route::get('/questionnaire', [QuestionnairesController::class, 'adminIndex']);
         Route::post('/questionnaire', [QuestionnairesController::class, 'adminStore']);
         Route::get('/questionnaire/create', [QuestionnairesController::class, 'adminCreate']);
@@ -46,6 +48,7 @@ Route::middleware('auth')->group(function(){
         Route::put('/questionnaire/{questionnaire_id}', [QuestionnairesController::class, 'adminUpdate']);
         Route::delete('/questionnaire/{questionnaire_id}', [QuestionnairesController::class, 'adminDestroy']);
 
+        // App Setting
         Route::get('/setting', [DashboardController::class, 'appSettingView']);
         Route::put('/setting', [DashboardController::class, 'appSettingUpdate']);
     });
