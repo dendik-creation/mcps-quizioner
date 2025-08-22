@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
+use Inertia\Inertia;
+use App\Models\Schools;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\Participant;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
-use Inertia\Inertia;
+
+use function PHPSTORM_META\map;
 
 class AuthController extends Controller
 {
@@ -32,7 +36,7 @@ class AuthController extends Controller
             'app_name' => config('app.name'),
         ]);
     }
-    
+
     public function signInStore(Request $request)
     {
         $credentials = $request->validate([
@@ -61,5 +65,47 @@ class AuthController extends Controller
         Auth::logout();
         Session::flash('success', 'Logout berhasil');
         return Inertia::location('/auth/signin');
+    }
+
+    public function registerView()
+    {
+        $schools = Schools::all();
+        $schools = $schools->map(function ($school) {
+            return [
+                'value' => $school->id,
+                'label' => $school->name,
+            ];
+        });
+        return Inertia::render('Auth/Registration', [
+            'app_name' => config('app.name'),
+            'schools' => $schools
+        ]);
+    }
+
+    public function registerStore(Request $request)
+    {
+        $data = $request->validate(
+            [
+                'fullname' => 'required',
+                'nisn' => 'required|min:10|max:10',
+                'school_id' => 'required|exists:schools,id',
+                'class' => 'required',
+            ],
+            [
+                'fullname.required' => 'Nama lengkap harus diisi',
+                'nisn.required' => 'NISN harus diisi',
+                'nisn.min' => 'NISN harus 10 digit',
+                'nisn.max' => 'NISN harus 10 digit',
+                'school_id.required' => 'Sekolah harus dipilih',
+                'school_id.exists' => 'Sekolah tidak valid',
+                'class.required' => 'Kelas harus diisi',
+            ]
+        );
+
+        $participant = Participant::create($data);
+        session(['participant_id' => $participant->id]);
+
+        Session::flash('success', 'Registrasi berhasil');
+        return Inertia::location('/demo');
     }
 }

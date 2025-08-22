@@ -8,19 +8,20 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { ErrorInput } from "@/components/custom/FormElement";
+import { ErrorInput, SelectSearchInput } from "@/components/custom/FormElement";
 import { Toaster } from "react-hot-toast";
 import BlastToaster from "@/components/custom/BlastToaster";
-import { FilePen, Key, Loader, LogIn, User } from "lucide-react";
+import { DoorOpen, FilePen, GraduationCap, IdCard, Key, Loader, LogIn, User } from "lucide-react";
 import { useEffect } from "react";
 import { removeLocalStorage } from "@/lib/local_storage";
-import { Link, router } from "@inertiajs/react";
 
-export default function SignIn({ app_name }: { app_name: string }) {
+export default function Registration({ app_name, schools }: { app_name: string, schools: any[] }) {
     const { flash } = usePage().props as any;
     const { data, setData, post, processing, errors, setError } = useForm({
-        username: "",
-        password: "",
+        fullname: "",
+        nisn: "",
+        class: "",
+        school_id: "",
     });
 
     useEffect(() => {
@@ -39,10 +40,13 @@ export default function SignIn({ app_name }: { app_name: string }) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!data.username) setError("username", "Masukkan username");
-        if (!data.password) setError("password", "Masukkan password");
-        if (!data.username || !data.password) return;
-        post("/auth/signin", {
+        if (!data.fullname) setError("fullname", "Masukkan nama lengkap");
+        if (!data.nisn) setError("nisn", "Masukkan nisn");
+        if (!data.school_id) setError("school_id", "Pilih sekolah");
+        if (!data.class) setError("class", "Masukkan kelas");
+        if (!data.fullname || !data.nisn || !data.class || !data.school_id) return;
+
+        post("/auth/register", {
             preserveScroll: true,
             replace: true,
             onError: (errors) => {
@@ -51,30 +55,17 @@ export default function SignIn({ app_name }: { app_name: string }) {
         });
     };
 
-    const handleRegister = () => {
-        router.get(`/auth/register`);
-    };
-
     return (
         <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-background">
             <Toaster position={"bottom-right"} reverseOrder={false} />
             <Card className="w-full max-w-7xl shadow-md mx-4 flex flex-col md:flex-row">
-                {/* Kiri: Gambar */}
-                <div className="w-full flex items-center justify-center dark:bg-muted rounded-t-md md:rounded-l-md md:rounded-tr-none p-6">
-                    <img
-                        src="/assets/img/sign-in-vector.svg"
-                        alt="Icon Image"
-                        className="mx-auto bg-cover object-center"
-                    />
-                </div>
-                {/* Kanan: Form */}
                 <div className="w-full flex flex-col justify-center p-6">
                     <CardHeader className="p-0 mb-4">
                         <CardTitle className="text-center font-bold text-2xl">
-                            {app_name}
+                            Registration
                         </CardTitle>
                         <CardDescription className="text-center">
-                            Selamat datang dan masuk ke akun Anda
+                            Masukkan data diri anda untuk menjawab Kuisoner
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="p-0">
@@ -86,44 +77,93 @@ export default function SignIn({ app_name }: { app_name: string }) {
                                     </span>
                                     <Input
                                         type="text"
-                                        placeholder="Username"
+                                        placeholder="Nama Lengkap"
                                         autoFocus={true}
-                                        value={data.username}
+                                        value={data.fullname}
                                         onChange={(e) =>
-                                            setData("username", e.target.value)
+                                            setData("fullname", e.target.value)
                                         }
                                         className={`pl-10 py-6 ${
-                                            errors.username
+                                            errors.fullname
                                                 ? "border-red-500"
                                                 : ""
                                         }`}
                                     />
                                 </div>
-                                {errors.username && (
-                                    <ErrorInput error={errors.username} />
+                                {errors.fullname && (
+                                    <ErrorInput error={errors.fullname} />
                                 )}
                             </div>
                             <div className="relative">
                                 <div className="flex items-center">
                                     <span className="absolute left-3 text-gray-500">
-                                        <Key />
+                                        <IdCard />
                                     </span>
                                     <Input
-                                        type="password"
-                                        placeholder="Password"
-                                        value={data.password}
+                                        type="text"
+                                        placeholder="NISN"
+                                        value={data.nisn}
                                         onChange={(e) =>
-                                            setData("password", e.target.value)
+                                            setData("nisn", e.target.value)
                                         }
                                         className={`pl-10 py-6 ${
-                                            errors.password
+                                            errors.nisn
                                                 ? "border-red-500"
                                                 : ""
                                         }`}
                                     />
                                 </div>
-                                {errors.password && (
-                                    <ErrorInput error={errors.password} />
+                                {errors.nisn && (
+                                    <ErrorInput error={errors.nisn} />
+                                )}
+                            </div>
+
+                            <div className="relative">
+                                <div className="flex items-center">
+                                    <span className="absolute left-3 text-gray-500">
+                                        <GraduationCap />
+                                    </span>
+                                    <SelectSearchInput
+                                        placeholder="Pilih Sekolah"
+                                        options={schools}
+                                        value={data.school_id}
+                                        removeValue={() => setData("school_id", "")}
+                                        onChange={(value) =>
+                                            setData("school_id", String(value))
+                                        }
+                                        className={`pl-10 py-3 ${
+                                            errors.school_id
+                                                ? "border-red-500"
+                                                : ""
+                                        }`}
+                                    />
+                                </div>
+                                {errors.school_id && (
+                                    <ErrorInput error={errors.school_id} />
+                                )}
+                            </div>
+
+                            <div className="relative">
+                                <div className="flex items-center">
+                                    <span className="absolute left-3 text-gray-500">
+                                        <DoorOpen />
+                                    </span>
+                                    <Input
+                                        type="text"
+                                        placeholder="Kelas"
+                                        value={data.class}
+                                        onChange={(e) =>
+                                            setData("class", e.target.value)
+                                        }
+                                        className={`pl-10 py-6 ${
+                                            errors.class
+                                                ? "border-red-500"
+                                                : ""
+                                        }`}
+                                    />
+                                </div>
+                                {errors.class && (
+                                    <ErrorInput error={errors.class} />
                                 )}
                             </div>
                             <Button
@@ -136,21 +176,10 @@ export default function SignIn({ app_name }: { app_name: string }) {
                                     <Loader className="animate-spin" />
                                 ) : (
                                     <span className="flex items-center gap-2">
-                                        <span>Masuk</span>
+                                        <span>Register</span>
                                         <LogIn />
                                     </span>
                                 )}
-                            </Button>
-                            <Button
-                                type="button"
-                                variant={"blue"}
-                                className="w-full p-6"
-                                onClick={handleRegister}
-                            >
-                                <span className="flex items-center gap-2">
-                                    <span>Registrasi</span>
-                                    <FilePen />
-                                </span>
                             </Button>
                         </form>
                     </CardContent>
