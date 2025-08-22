@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function(){
         Route::get('/participant', [ParticipantController::class, 'index']);
 
         Route::get('/questionnaire', [QuestionnairesController::class, 'adminIndex']);
+        Route::post('/questionnaire', [QuestionnairesController::class, 'adminStore']);
         Route::get('/questionnaire/create', [QuestionnairesController::class, 'adminCreate']);
         Route::get('/questionnaire/{questionnaire_id}/edit', [QuestionnairesController::class, 'adminEdit']);
         Route::put('/questionnaire/{questionnaire_id}', [QuestionnairesController::class, 'adminUpdate']);

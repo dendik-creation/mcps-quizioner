@@ -10,11 +10,11 @@ class Questions extends Model
 
     public function questionnaire()
     {
-        return $this->belongsTo(Questionnaires::class);
+        return $this->belongsTo(Questionnaires::class, "questionnaire_id");
     }
 
     public function choices()
     {
-        return $this->hasMany(Choices::class);
+        return $this->hasMany(Choices::class, "question_id");
     }
 }
