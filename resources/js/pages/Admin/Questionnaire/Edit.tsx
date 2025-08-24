@@ -20,6 +20,11 @@ import {
     Save,
 } from "lucide-react";
 import React from "react";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const choiceLetters = ["A", "B", "C", "D", "E"];
 
@@ -158,6 +163,16 @@ const QuestionnaireEdit = ({
             e.target.name as "name" | "description" | "is_open",
             e.target.value
         );
+    };
+
+    const handleChangeChoicePoint = (
+        questionIdx: number,
+        choiceIdx: number,
+        value: number
+    ) => {
+        const newQuestions = [...data.saved_questions];
+        newQuestions[questionIdx].choices[choiceIdx].point = value;
+        setData("saved_questions", newQuestions);
     };
 
     // Validate form before submit
@@ -385,6 +400,39 @@ const QuestionnaireEdit = ({
                                                                 )
                                                             }
                                                         />
+                                                        <div className="absolute right-3 top-0.5 rounded-r-md h-full flex items-center justify-center w-8">
+                                                            <Tooltip>
+                                                                <TooltipTrigger type="button">
+                                                                    <Switch
+                                                                        name="point"
+                                                                        id="point"
+                                                                        checked={
+                                                                            choice.point ==
+                                                                            1
+                                                                        }
+                                                                        onCheckedChange={(
+                                                                            checked
+                                                                        ) =>
+                                                                            handleChangeChoicePoint(
+                                                                                questionIdx,
+                                                                                choiceIdx,
+                                                                                checked
+                                                                                    ? 1
+                                                                                    : 0
+                                                                            )
+                                                                        }
+                                                                    />
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>
+                                                                    <p>
+                                                                        {choice.point ==
+                                                                        1
+                                                                            ? "Jawaban Benar"
+                                                                            : "Jawaban Salah"}
+                                                                    </p>
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </div>
                                                     </div>
                                                 )
                                             )}
