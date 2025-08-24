@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Participant;
+use App\Models\Schools;
 use App\Models\Settings;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
@@ -11,9 +14,15 @@ class DashboardController extends Controller
 {
     public function adminDashboard()
     {
+        $data_count = [
+            "school" => Schools::count(),
+            "participant" => Participant::count(),
+            "researcher" => User::where('role', User::PENELITI_ROLE)->count()
+        ];
         return Inertia::render('Admin/Dashboard', [
             'title' => 'Dashboard',
             'description' => 'Halaman utama untuk melihat ringkasan data kuisioner',
+            'data_count' => $data_count
         ]);
     }
 
