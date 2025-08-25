@@ -87,15 +87,15 @@ class AuthController extends Controller
         $data = $request->validate(
             [
                 'fullname' => 'required',
-                'nisn' => 'required|min:10|max:10',
+                'nisn' => 'required|regex:/^[0-9]{10}$/',
                 'school_id' => 'required|exists:schools,id',
                 'class' => 'required',
             ],
             [
                 'fullname.required' => 'Nama lengkap harus diisi',
                 'nisn.required' => 'NISN harus diisi',
-                'nisn.min' => 'NISN harus 10 digit',
-                'nisn.max' => 'NISN harus 10 digit',
+                'nisn.regex' => 'NISN harus berupa 10 digit angka',
+                'nisn.numeric' => 'NISN harus berupa angka',
                 'school_id.required' => 'Sekolah harus dipilih',
                 'school_id.exists' => 'Sekolah tidak valid',
                 'class.required' => 'Kelas harus diisi',

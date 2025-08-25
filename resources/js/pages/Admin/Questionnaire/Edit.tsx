@@ -6,10 +6,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import AppLayout from "@/partials/AppLayout";
 import { PageTitle } from "@/partials/PageTitle";
-import { PageTitleProps } from "@/types/global";
+import { QuestionnaireEditProps } from "@/types/questionnaire";
 import { useForm } from "@inertiajs/react";
 import {
     ClipboardList,
@@ -20,29 +21,67 @@ import {
 } from "lucide-react";
 import React from "react";
 
-const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
-    const choiceLetters = ["A", "B", "C", "D", "E"];
-    const { data, setData, post, processing, errors, setError, clearErrors } =
-        useForm({
-            name: "",
-            description: "",
-            questions: [
-                {
-                    question: "",
-                    choices: choiceLetters.map(() => ({
-                        choice: "",
-                        point: 1,
-                    })),
-                },
-            ],
+const choiceLetters = ["A", "B", "C", "D", "E"];
+
+type Choice = {
+    id?: number | null;
+    choice: string;
+    point: number;
+};
+
+type Question = {
+    id?: number | null;
+    question: string;
+    choices: Choice[];
+};
+
+interface FormData {
+    name: string;
+    description: string;
+    is_open: boolean;
+    saved_questions: Question[];
+    new_questions: Omit<Question, "id">[];
+    deleted_questions: number[];
+}
+
+const QuestionnaireEdit = ({
+    title,
+    description,
+    questionnaire,
+}: QuestionnaireEditProps) => {
+    const { data, setData, put, processing, errors, setError, clearErrors } =
+        useForm<FormData>({
+            name: questionnaire.name ?? "",
+            description: questionnaire.description ?? "",
+            is_open: questionnaire.is_open ?? false,
+            saved_questions:
+                questionnaire?.questions?.map((q) => ({
+                    id: typeof q.id === "number" ? q.id : null,
+                    question: q.question ?? "",
+                    choices:
+                        q.choices?.map((c) => ({
+                            id: typeof c.id === "number" ? c.id : null,
+                            choice: c.choice ?? "",
+                            point: c.point ?? 1,
+                        })) ?? [],
+                })) ?? [],
+            new_questions: [],
+            deleted_questions: [],
         });
 
-    const newQuestion = () => {
-        setData("questions", [
-            ...data.questions,
+    // Combine all questions for rendering
+    const allQuestions: Question[] = [
+        ...(data.saved_questions ?? []),
+        ...(data.new_questions ?? []),
+    ];
+
+    // Add new question to new_questions
+    const addNewQuestion = () => {
+        setData("new_questions", [
+            ...data.new_questions,
             {
                 question: "",
-                choices: choiceLetters.map((letter) => ({
+                choices: choiceLetters.map(() => ({
                     choice: "",
                     point: 1,
                 })),
@@ -50,37 +89,78 @@ const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
         ]);
     };
 
+    // Remove question, check if from saved_questions or new_questions
     const removeQuestion = (index: number) => {
-        setData(
-            "questions",
-            data.questions.filter((_, i) => i !== index)
-        );
+        const savedCount = data.saved_questions.length;
+        if (index < savedCount) {
+            const removed = data.saved_questions[index];
+            if (removed.id) {
+                setData("deleted_questions", [
+                    ...data.deleted_questions,
+                    removed.id,
+                ]);
+            }
+            setData(
+                "saved_questions",
+                data.saved_questions.filter((_, i) => i !== index)
+            );
+        } else {
+            const newIdx = index - savedCount;
+            setData(
+                "new_questions",
+                data.new_questions.filter((_, i) => i !== newIdx)
+            );
+        }
     };
 
-    const handleChangeQuestionnaire = (
-        e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-    ) => {
-        setData(e.target.name as "name" | "description", e.target.value);
-    };
-
+    // Handler for changing question text
     const handleChangeQuestion = (questionIdx: number, value: string) => {
-        const newQuestions = [...data.questions];
-        newQuestions[questionIdx].question = value;
-        setData("questions", newQuestions);
+        const savedCount = data.saved_questions.length;
+        if (questionIdx < savedCount) {
+            const newSaved = [...data.saved_questions];
+            newSaved[questionIdx].question = value;
+            setData("saved_questions", newSaved);
+        } else {
+            const newIdx = questionIdx - savedCount;
+            const newNew = [...data.new_questions];
+            newNew[newIdx].question = value;
+            setData("new_questions", newNew);
+        }
     };
 
+    // Handler for changing choice text
     const handleChangeChoice = (
         questionIdx: number,
         choiceIdx: number,
-        e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+        e: React.ChangeEvent<HTMLInputElement>
     ) => {
-        const newQuestions = [...data.questions];
-        newQuestions[questionIdx].choices[choiceIdx][
-            e.target.name as "choice"
-        ] = e.target.value;
-        setData("questions", newQuestions);
+        const savedCount = data.saved_questions.length;
+        if (questionIdx < savedCount) {
+            const newSaved = [...data.saved_questions];
+            newSaved[questionIdx].choices[choiceIdx][
+                e.target.name as "choice"
+            ] = e.target.value;
+            setData("saved_questions", newSaved);
+        } else {
+            const newIdx = questionIdx - savedCount;
+            const newNew = [...data.new_questions];
+            newNew[newIdx].choices[choiceIdx][e.target.name as "choice"] =
+                e.target.value;
+            setData("new_questions", newNew);
+        }
     };
 
+    // Handler for questionnaire name/description
+    const handleChangeQuestionnaire = (
+        e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+    ) => {
+        setData(
+            e.target.name as "name" | "description" | "is_open",
+            e.target.value
+        );
+    };
+
+    // Validate form before submit
     const validateForm = (): boolean => {
         let valid = true;
         let hasToasterShown = false;
@@ -96,7 +176,7 @@ const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
             valid = false;
         }
 
-        data.questions.forEach((q) => {
+        allQuestions.forEach((q) => {
             const cleanQuestion = q.question
                 .replace(/<[^>]+>/g, "")
                 .replace(/&nbsp;/g, "")
@@ -120,10 +200,11 @@ const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
         return valid;
     };
 
+    // Submit handler
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!validateForm()) return;
-        post("/admin/questionnaire", {
+        put("/admin/questionnaire/" + questionnaire.id, {
             preserveState: true,
             replace: true,
         });
@@ -142,7 +223,7 @@ const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
                                 Informasi Kuisioner
                             </h3>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                             <div className="flex flex-col w-full">
                                 <label className="text-base mb-1 after:content-['*'] after:text-red-500 after:ml-1">
                                     Nama
@@ -160,6 +241,33 @@ const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
                                 />
                                 {errors.name && (
                                     <ErrorInput error={errors.name} />
+                                )}
+                            </div>
+                            <div className="flex flex-col w-full">
+                                <label className="text-base mb-1 after:content-['*'] after:text-red-500 after:ml-1">
+                                    Aktifkan Kuisioner{" "}
+                                    <span className="text-sm">
+                                        (Jika aktif, maka kuisioner lainnya
+                                        dimatikan)
+                                    </span>
+                                </label>
+                                <Switch
+                                    name="is_open"
+                                    id="is_open"
+                                    checked={!!data.is_open}
+                                    onCheckedChange={(checked) =>
+                                        setData(
+                                            "is_open",
+                                            checked ? true : false
+                                        )
+                                    }
+                                    className={cn(
+                                        "bg-blue-100",
+                                        errors.is_open && "border-red-500"
+                                    )}
+                                />
+                                {errors.is_open && (
+                                    <ErrorInput error={errors.is_open} />
                                 )}
                             </div>
                             <div className="flex flex-col w-full">
@@ -192,7 +300,7 @@ const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
                         <Button
                             variant={"yellow"}
                             className="flex items-center gap-2"
-                            onClick={newQuestion}
+                            onClick={addNewQuestion}
                             type="button"
                         >
                             <PlusCircle />
@@ -200,7 +308,7 @@ const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
                         </Button>
                     </div>
                 </div>
-                {data.questions.map((question, questionIdx) => (
+                {allQuestions.map((question, questionIdx) => (
                     <Card className="py-3 mb-4" key={questionIdx}>
                         <CardContent className="px-3">
                             <div className="flex justify-between items-center gap-3 mb-2">
@@ -211,7 +319,7 @@ const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
                                         {questionIdx + 1}
                                     </h3>
                                 </div>
-                                {questionIdx > 0 && (
+                                {allQuestions.length > 1 && (
                                     <Button
                                         type="button"
                                         size={"sm"}
@@ -291,6 +399,7 @@ const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
                     type="submit"
                     variant={"blue"}
                     className="flex w-full items-center gap-2"
+                    disabled={processing}
                 >
                     <Save />
                     <span>Simpan</span>
@@ -300,4 +409,4 @@ const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
     );
 };
 
-export default QuestionnaireCreate;
+export default QuestionnaireEdit;

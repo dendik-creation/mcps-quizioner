@@ -30,8 +30,8 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import { SelectOption } from "@/types/global";
 
 type ErrorInputProps = {
@@ -277,51 +277,83 @@ export const MultiSelectSearchInput = ({
 
 export function RichTextEditorInput({
     content,
-    minHeight = 200,
+    height = 200,
     onChange,
 }: {
     content: string;
-    minHeight?: number;
-    onChange: (value: string) => void;
+    height?: number;
+    onChange?: (value: string) => void;
 }) {
+    const modules = {
+        toolbar: [
+            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+            ["bold", "italic", "underline", "strike"],
+            [{ list: "ordered" }, { list: "bullet" }],
+            ["blockquote", "code-block"],
+            ["link", "image"],
+            [{ align: [] }],
+            [{ color: [] }, { background: [] }],
+            ["clean"],
+        ],
+    };
+
+    const formats = [
+        "header",
+        "font",
+        "size",
+        "bold",
+        "italic",
+        "underline",
+        "strike",
+        "blockquote",
+        "list",
+        "bullet",
+        "indent",
+        "link",
+        "image",
+        "color",
+        "background",
+        "align",
+        "code-block",
+    ];
+
+    const editorStyles = {
+        minHeight: `${height}px`,
+    };
+
+    const quillStyles = {
+        height: "100%",
+        display: "flex",
+        flexDirection: "column" as const,
+    };
+
     return (
-        <div className="rounded-md border overflow-auto">
-            <CKEditor
-                editor={ClassicEditor}
-                data={content}
-                config={{
-                    toolbar: [
-                        "heading",
-                        "|",
-                        "bold",
-                        "italic",
-                        "underline",
-                        "link",
-                        "bulletedList",
-                        "numberedList",
-                        "blockQuote",
-                        "|",
-                        "insertTable",
-                        "imageUpload",
-                        "undo",
-                        "redo",
-                    ],
-                }}
-                onReady={(editor) => {
-                    const root = editor.editing.view.document.getRoot();
-                    if (root) {
-                        editor.editing.view.change((writer) => {
-                            writer.setStyle(
-                                "min-height",
-                                `${minHeight}px`,
-                                root
-                            );
-                        });
+        <div className="rounded-md border overflow-hidden" style={editorStyles}>
+            <ReactQuill
+                theme="snow"
+                value={content}
+                onChange={onChange}
+                modules={modules}
+                formats={formats}
+                className="bg-white"
+                style={quillStyles}
+            />
+            <style
+                dangerouslySetInnerHTML={{
+                    __html: `
+                    .ql-container {
+                        flex: 1;
+                        display: flex;
+                        flex-direction: column;
                     }
-                }}
-                onChange={(_event, editor) => {
-                    const data = editor.getData();
-                    onChange(data);
+                    .ql-editor {
+                        flex: 1;
+                        height: auto !important;
+                        min-height: ${height - 45}px;
+                        max-height: ${height - 45}px;
+                        overflow-y: auto;
+                    }
+                `,
                 }}
             />
         </div>

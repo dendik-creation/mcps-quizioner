@@ -7,6 +7,7 @@ use App\Http\Controllers\QuestionnairesController;
 use App\Http\Controllers\SchoolsController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\adminRole;
+use App\Http\Middleware\participantRole;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'authCheck']);
@@ -37,14 +38,18 @@ Route::middleware('auth')->group(function(){
         //School
         Route::resource('/school', SchoolsController::class)->except(['create', 'edit']);
 
+        // Participant
         Route::get('/participant', [ParticipantController::class, 'index']);
 
+        // Questionares
         Route::get('/questionnaire', [QuestionnairesController::class, 'adminIndex']);
+        Route::post('/questionnaire', [QuestionnairesController::class, 'adminStore']);
         Route::get('/questionnaire/create', [QuestionnairesController::class, 'adminCreate']);
         Route::get('/questionnaire/{questionnaire_id}/edit', [QuestionnairesController::class, 'adminEdit']);
         Route::put('/questionnaire/{questionnaire_id}', [QuestionnairesController::class, 'adminUpdate']);
         Route::delete('/questionnaire/{questionnaire_id}', [QuestionnairesController::class, 'adminDestroy']);
 
+        // App Setting
         Route::get('/setting', [DashboardController::class, 'appSettingView']);
         Route::put('/setting', [DashboardController::class, 'appSettingUpdate']);
     });

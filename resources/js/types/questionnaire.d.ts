@@ -6,8 +6,13 @@ export type Questionnaire = {
     name: string;
     description: string;
     is_open: boolean;
+    questions: Question[];
 };
 
 export type QuestionnaireIndexProps = PageTitleProps & {
     questionnaires: Questionnaire[];
+};
+
+export type QuestionnaireEditProps = PageTitleProps & {
+    questionnaire: Questionnaire;
 };
