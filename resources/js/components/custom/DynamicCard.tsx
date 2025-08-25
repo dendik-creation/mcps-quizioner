@@ -18,8 +18,8 @@ const DynamicCard = ({
 }: DynamicCardProps) => {
     return (
         <Card className="relative overflow-hidden">
-            <CardContent>
-                <div className={`flex items-center space-x-4`}>
+            <CardContent className="py-3">
+                <div className={`flex items-center`}>
                     <div className={`absolute -bottom-8 -right-10`}>{icon}</div>
                     <div>
                         <h3 className="text-lg font-semibold">{title}</h3>

@@ -6,6 +6,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import AppLayout from "@/partials/AppLayout";
 import { PageTitle } from "@/partials/PageTitle";
@@ -19,6 +20,11 @@ import {
     Save,
 } from "lucide-react";
 import React from "react";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
     const choiceLetters = ["A", "B", "C", "D", "E"];
@@ -31,7 +37,7 @@ const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
                     question: "",
                     choices: choiceLetters.map(() => ({
                         choice: "",
-                        point: 1,
+                        point: 0,
                     })),
                 },
             ],
@@ -44,7 +50,7 @@ const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
                 question: "",
                 choices: choiceLetters.map((letter) => ({
                     choice: "",
-                    point: 1,
+                    point: 0,
                 })),
             },
         ]);
@@ -78,6 +84,16 @@ const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
         newQuestions[questionIdx].choices[choiceIdx][
             e.target.name as "choice"
         ] = e.target.value;
+        setData("questions", newQuestions);
+    };
+
+    const handleChangeChoicePoint = (
+        questionIdx: number,
+        choiceIdx: number,
+        value: number
+    ) => {
+        const newQuestions = [...data.questions];
+        newQuestions[questionIdx].choices[choiceIdx].point = value;
         setData("questions", newQuestions);
     };
 
@@ -277,6 +293,39 @@ const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
                                                                 )
                                                             }
                                                         />
+                                                        <div className="absolute right-3 top-0.5 rounded-r-md h-full flex items-center justify-center w-8">
+                                                            <Tooltip>
+                                                                <TooltipTrigger type="button">
+                                                                    <Switch
+                                                                        name="point"
+                                                                        id="point"
+                                                                        checked={
+                                                                            choice.point ==
+                                                                            1
+                                                                        }
+                                                                        onCheckedChange={(
+                                                                            checked
+                                                                        ) =>
+                                                                            handleChangeChoicePoint(
+                                                                                questionIdx,
+                                                                                choiceIdx,
+                                                                                checked
+                                                                                    ? 1
+                                                                                    : 0
+                                                                            )
+                                                                        }
+                                                                    />
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>
+                                                                    <p>
+                                                                        {choice.point ==
+                                                                        1
+                                                                            ? "Jawaban Benar"
+                                                                            : "Jawaban Salah"}
+                                                                    </p>
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </div>
                                                     </div>
                                                 )
                                             )}
