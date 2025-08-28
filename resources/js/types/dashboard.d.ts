@@ -6,4 +6,18 @@ export type AdminDashboardProps = PageTitleProps & {
         participant: number;
         researcher: number;
     };
+    data_chart: {
+        school_participants: {
+            label: string;
+            value: number;
+        }[];
+    };
+    data_table: {
+        latest_questionnaries: {
+            participant_name: string;
+            school: string;
+            questionnaire: string;
+            submitted_at: string;
+        }[];
+    };
 };
