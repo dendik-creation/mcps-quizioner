@@ -12,4 +12,5 @@ export type Participant = {
 
 export type ParticipantIndexProps = PageTitleProps & {
     participants: PaginationData<Participant>;
+    search: string;
 };

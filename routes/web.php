@@ -8,6 +8,7 @@ use App\Http\Controllers\SchoolsController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\adminRole;
 use App\Http\Middleware\participantRole;
+use App\Http\Middleware\penelitiRole;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'authCheck']);
@@ -39,7 +40,7 @@ Route::middleware('auth')->group(function(){
         Route::resource('/school', SchoolsController::class)->except(['create', 'edit']);
 
         // Participant
-        Route::get('/participant', [ParticipantController::class, 'index']);
+        Route::get('/participant', [ParticipantController::class, 'adminIndex']);
 
         // Questionares
         Route::get('/questionnaire', [QuestionnairesController::class, 'adminIndex']);
@@ -56,5 +57,12 @@ Route::middleware('auth')->group(function(){
         // App Setting
         Route::get('/setting', [DashboardController::class, 'appSettingView']);
         Route::put('/setting', [DashboardController::class, 'appSettingUpdate']);
+    });
+
+    // Peneliti
+    Route::prefix('peneliti')->middleware([penelitiRole::class])->group(function(){
+        Route::get('/dashboard', [DashboardController::class, 'penelitiDashboard']);
+        // Participant
+        Route::get('/participant', [ParticipantController::class, 'penelitiIndex']);
     });
 });

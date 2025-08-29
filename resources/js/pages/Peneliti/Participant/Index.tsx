@@ -25,7 +25,7 @@ const ParticipantIndex = ({
     const [participantData, setParticipantData] = useState(participants.data);
     const debouncedSearch = inputDebounce(async (value: string) => {
         router.get(
-            "/admin/participant",
+            "/peneliti/participant",
             { search: value },
             {
                 preserveState: true,
