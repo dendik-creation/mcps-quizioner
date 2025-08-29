@@ -64,7 +64,7 @@ const adminSidebarNavs: NavItems = [
     },
     {
         title: "Hasil Kuis",
-        url: "/admin/questionnaire-result",
+        url: "/admin/result",
         icon: LaptopMinimalCheck,
         type: "item",
     },

@@ -49,6 +49,10 @@ Route::middleware('auth')->group(function(){
         Route::put('/questionnaire/{questionnaire_id}', [QuestionnairesController::class, 'adminUpdate']);
         Route::delete('/questionnaire/{questionnaire_id}', [QuestionnairesController::class, 'adminDestroy']);
 
+        // Questionnaires Result
+        Route::get('/result', [QuestionnairesController::class, 'adminQuestionnairesResult']);
+        Route::get('/result/{questionnaire_id}/{participant_id}', [QuestionnairesController::class, 'adminQuestionnairesResultShow']);
+
         // App Setting
         Route::get('/setting', [DashboardController::class, 'appSettingView']);
         Route::put('/setting', [DashboardController::class, 'appSettingUpdate']);
