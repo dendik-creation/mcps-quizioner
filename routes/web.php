@@ -11,7 +11,7 @@ use App\Http\Middleware\participantRole;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'authCheck']);
-Route::middleware('guest')->group(function(){
+Route::middleware('guest')->group(function () {
     // Sign-in
     Route::get('/auth/signin', [AuthController::class, 'signInView'])->name('login');
     Route::post('/auth/signin', [AuthController::class, 'signInStore']);
@@ -21,17 +21,23 @@ Route::middleware('guest')->group(function(){
     Route::post('/auth/register', [AuthController::class, 'registerStore']);
 });
 
-Route::middleware(['participant'])->group(function () {
+Route::middleware(['participant', 'answering'])->group(function () {
+    Route::get('/guide', [QuestionnairesController::class, 'guide'])->name('guide');
     Route::get('/demo', [QuestionnairesController::class, 'demo'])->name('demo');
     Route::get('/kuisioner', [ParticipantController::class, 'kuisioner'])->name('kuisioner');
+
+    Route::middleware(['answering'])->group(function () {
+        Route::get('/questionnaire/in-progress', [QuestionnairesController::class, 'answerIndex']);
+        Route::post('/questionnaire/in-progress', [QuestionnairesController::class, 'answerStore']);
+    });
 });
 
-Route::middleware('auth')->group(function(){
+Route::middleware('auth')->group(function () {
     // Sign-out
     Route::post('/auth/signout', [AuthController::class, 'signOutStore']);
 
     // Admind
-    Route::prefix('admin')->middleware([adminRole::class])->group(function(){
+    Route::prefix('admin')->middleware([adminRole::class])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'adminDashboard']);
         Route::resource('/user', UserController::class)->except(['show']);
 

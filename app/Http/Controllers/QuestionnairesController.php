@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Questionnaires;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
+use App\Models\Answer;
+use App\Models\Choices;
+use App\Models\Settings;
+use Illuminate\Http\Request;
+use App\Models\Questionnaires;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Session;
 
 class QuestionnairesController extends Controller
 {
@@ -102,7 +104,7 @@ class QuestionnairesController extends Controller
         ]);
 
         $questionnaire = Questionnaires::findOrFail($id);
-        if($validated['is_open']){
+        if ($validated['is_open']) {
             Questionnaires::where('id', '!=', $questionnaire->id)->update(['is_open' => false]);
         }
         $questionnaire->update([
@@ -174,9 +176,93 @@ class QuestionnairesController extends Controller
         return Inertia::location('/admin/questionnaire');
     }
 
-    public function demo(){
+    public function guide()
+    {
+        return Inertia::render('Questionnaires/Guide', [
+            'title' => 'Guide',
+        ]);
+    }
+
+    public function demo()
+    {
         return Inertia::render('Questionnaires/Demo', [
             'title' => 'Demo',
         ]);
+    }
+
+    public function answerIndex()
+    {
+        if (!session('answers')) {
+            session(['answers' => true]);
+        }
+
+        $setting = Settings::first();
+        $questionnaire = Questionnaires::with('questions.choices')
+            ->where('is_open', true)
+            ->first();
+
+        if (!session()->has("question_order_{$questionnaire->id}")) {
+            $order = $questionnaire->questions->pluck('id')->toArray();
+            shuffle($order);
+            session(["question_order_{$questionnaire->id}" => $order]);
+        }
+
+        $order = session("question_order_{$questionnaire->id}");
+        $questions = $questionnaire->questions->sortBy(function ($q) use ($order) {
+            return array_search($q->id, $order);
+        })->values();
+        $questionnaire->setRelation('questions', $questions);
+
+        return Inertia::render('Questionnaires/AnswerIndex', [
+            'title' => 'Kuisioner',
+            'questionnaire' => $questionnaire,
+            'setting' => $setting,
+        ]);
+    }
+    public function answerStore(Request $request)
+    {
+        $request->validate([
+            'questionnaire_id' => 'required|integer',
+            'choices' => 'required|string',
+            'essays' => 'required|string',
+            'timeLeft' => 'required|integer',
+        ]);
+
+        $choices = json_decode($request->choices, true);
+        $essays = json_decode($request->essays, true);
+
+        try {
+            foreach ($choices as $choice) {
+                $questionId = $choice['questionId'];
+                foreach ($choice['choices'] as $choiceId) {
+                    $point = Choices::where('id', $choiceId)->value('point');
+
+                    Answer::create([
+                        'questionnaire_id' => $request->questionnaire_id,
+                        'participant_id' => session('participant_id'),
+                        'questions_id' => $questionId,
+                        'choice_id' => $choiceId,
+                        'point' => $point,
+                    ]);
+                }
+            }
+
+            foreach ($essays as $essay) {
+                Answer::create([
+                    'questionnaire_id' => $request->questionnaire_id,
+                    'participant_id' => session('participant_id'),
+                    'questions_id' => $essay['questionId'],
+                    'essay_answer' => $essay['essay'],
+                ]);
+            }
+
+            session(['answers' => null]);
+            session(['participant_id' => null]);
+
+            Session::flash('success', 'Kuesioner berhasil disimpan');
+            return Inertia::location('/');
+        } catch (\Exception $e) {
+            return Session::flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 }
