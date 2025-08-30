@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\Questionnaires;
 use App\Http\Controllers\Controller;
 use App\Models\Questions;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class QuestionnairesController extends Controller
@@ -316,13 +317,14 @@ class QuestionnairesController extends Controller
             'essay_points.*.question_id' => ['required', 'integer', 'exists:questions,id'],
             'essay_points.*.point' => ['required', 'integer', 'min:0'],
         ]);
+        $auth = Auth::user();
         $essay_points = $validated['essay_points'];
         foreach($essay_points as $point){
             Answer::where('questionnaire_id', $questionnaire_id)
                 ->where('participant_id', $participant_id)
                 ->where('questions_id', $point['question_id'])
                 ->where('choice_id', null)
-                ->update(['point' => $point['point']]);
+                ->update(['point' => $point['point'], 'researcher_id' => $auth->id]);
         }
         Session::flash('success', 'Point essay berhasil diperbarui');
         return Inertia::location('/peneliti/result');
