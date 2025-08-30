@@ -205,7 +205,7 @@ class QuestionnairesController extends Controller
         ]);
     }
 
-    public function adminQuestionnairesResultShow($participant_id, $questionnaire_id){
+    public function adminQuestionnairesResultShow($questionnaire_id, $participant_id){
         $answers = Answer::with(['participant.school', 'questionnaire', 'question', 'choice', 'researcher'])
             ->where('participant_id', $participant_id)
             ->where('questionnaire_id', $questionnaire_id)
