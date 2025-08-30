@@ -9,10 +9,7 @@ use App\Models\Settings;
 use Illuminate\Http\Request;
 use App\Models\Questionnaires;
 use App\Http\Controllers\Controller;
-use App\Models\Answer;
-use App\Models\Questionnaires;
 use App\Models\Questions;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
 class QuestionnairesController extends Controller
