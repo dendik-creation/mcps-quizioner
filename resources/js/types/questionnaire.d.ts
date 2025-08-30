@@ -52,6 +52,7 @@ export type QuestionnaireResultShowProps = PageTitleProps & {
         total_score: number;
     };
     answers: {
+        answer_id: number;
         questions_id: number;
         choice_id?: number | null;
         essay_answer?: string | null;
