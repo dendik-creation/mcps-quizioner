@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignId('participant_id')->constrained('participants')->onDelete('cascade');
             $table->foreignId('questionnaire_id')->constrained('questionnaires')->onDelete('cascade');
             $table->foreignId('questions_id')->constrained('questions')->onDelete('cascade');
-            $table->foreignId('choice_id')->nullable()->constrained('choices')->onDelete('cascade');
-            $table->foreignId('researcher_id')->nullable()->constrained('users')->onDelete('cascade');
-            $table->text('essay_answer')->nullable();
+            $table->foreignId('choice_id')->nullable()->nullable()->constrained('choices')->onDelete('cascade');
+            $table->foreignId('researcher_id')->nullable()->nullable()->constrained('users')->onDelete('cascade');
+            $table->longText('essay_answer')->nullable();
             $table->integer('point')->nullable();
             $table->timestamps();
         });

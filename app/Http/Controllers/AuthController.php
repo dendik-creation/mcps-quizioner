@@ -69,6 +69,10 @@ class AuthController extends Controller
 
     public function registerView()
     {
+        if (session('participant_id')) {
+            return redirect()->route('guide');
+        }
+
         $schools = Schools::all();
         $schools = $schools->map(function ($school) {
             return [
@@ -89,7 +93,7 @@ class AuthController extends Controller
                 'fullname' => 'required',
                 'nisn' => 'required|regex:/^[0-9]{10}$/',
                 'school_id' => 'required|exists:schools,id',
-                'class' => 'required',
+                'class' => 'required|max:10',
             ],
             [
                 'fullname.required' => 'Nama lengkap harus diisi',
@@ -99,6 +103,7 @@ class AuthController extends Controller
                 'school_id.required' => 'Sekolah harus dipilih',
                 'school_id.exists' => 'Sekolah tidak valid',
                 'class.required' => 'Kelas harus diisi',
+                'class.max' => 'Kelas tidak boleh lebih dari 10 karakter',
             ]
         );
 
@@ -106,6 +111,6 @@ class AuthController extends Controller
         session(['participant_id' => $participant->id]);
 
         Session::flash('success', 'Registrasi berhasil');
-        return Inertia::location('/demo');
+        return Inertia::location('/guide');
     }
 }
