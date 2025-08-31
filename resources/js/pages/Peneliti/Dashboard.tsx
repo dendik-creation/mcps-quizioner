@@ -17,7 +17,7 @@ import PieBuilder from "@/components/custom/ChartBuilder";
 import React, { useEffect } from "react";
 import { dateParserId } from "@/components/helper/date_parser";
 
-const AdminDashboard = ({
+const PenelitiDashboard = ({
     title,
     description,
     data_count,
@@ -25,7 +25,7 @@ const AdminDashboard = ({
     data_table,
 }: AdminDashboardProps) => {
     useEffect(() => {
-        saveLocalStorage("current_role", "ADMIN");
+        saveLocalStorage("current_role", "PENELITI");
     }, []);
     return (
         <AppLayout>
@@ -131,4 +131,4 @@ const AdminDashboard = ({
     );
 };
 
-export default AdminDashboard;
+export default PenelitiDashboard;

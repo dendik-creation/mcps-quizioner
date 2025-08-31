@@ -9,10 +9,16 @@ use App\Models\Settings;
 use Illuminate\Http\Request;
 use App\Models\Questionnaires;
 use App\Http\Controllers\Controller;
+use App\Models\Questions;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class QuestionnairesController extends Controller
 {
+    private function calculateTotalScore($total_point){
+        return $total_point / Questionnaires::MAX_POINT * 100;
+    }
+
     public function adminIndex()
     {
         $questionnaires = Questionnaires::with('questions')->get();
@@ -161,6 +167,167 @@ class QuestionnairesController extends Controller
 
         Session::flash('success', 'Kuesioner berhasil diperbarui');
         return Inertia::location('/admin/questionnaire');
+    }
+
+    public function adminQuestionnairesResult(Request $request){
+        $search = $request->get('search', '');
+        $query = Answer::with(['participant.school', 'questionnaire'])
+            ->select('participant_id', 'questionnaire_id')
+            ->selectRaw('SUM(point) as total_points')
+            ->selectRaw('COUNT(CASE WHEN point IS NULL THEN 1 END) as null_points_count')
+            ->groupBy('participant_id', 'questionnaire_id');
+
+        if (!empty($search)) {
+            $query->whereHas('participant', function ($q) use ($search) {
+                $q->where('fullname', 'LIKE', "%{$search}%");
+            })->orWhereHas('participant.school', function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%");
+            });
+        }
+        $paginatedResults = $query->paginate(10);
+        // Racik ulang 😁
+        $transformedData = $paginatedResults->through(function ($item) {
+            return [
+                'participant_name' => $item->participant->fullname,
+                'participant_id' => $item->participant->id,
+                'participant_class' => $item->participant->class,
+                'school_name' => $item->participant->school->name,
+                'questionnaire_name' => $item->questionnaire->name,
+                'questionnaire_id' => $item->questionnaire->id,
+                'latest_point' => $item->total_points ?? 0,
+                'need_correction' => $item->null_points_count > 0
+            ];
+        });
+        return Inertia::render('Admin/Questionnaire/Result/Index', [
+            'title' => 'Hasil Kuesioner',
+            'description' => 'Informasi hasil pekerjaan siswa dalam menyelesaikan quiz',
+            'answers' => $transformedData,
+            'search' => $search,
+        ]);
+    }
+
+    public function adminQuestionnairesResultShow($questionnaire_id, $participant_id){
+        $answers = Answer::with(['participant.school', 'questionnaire', 'question', 'choice', 'researcher'])
+            ->where('participant_id', $participant_id)
+            ->where('questionnaire_id', $questionnaire_id)
+            ->get();
+        $questions = Questions::with('choices')->where('questionnaire_id', $questionnaire_id)->get();
+        $meta_information = [
+            'participant_name' => $answers[0]->participant->fullname,
+            'participant_id' => $answers[0]->participant->id,
+            'participant_class' => $answers[0]->participant->class,
+            'school_name' => $answers[0]->participant->school->name,
+            'questionnaire_id' => $answers[0]->questionnaire->id,
+            'questionnaire_name' => $answers[0]->questionnaire->name,
+            'total_point' => $answers->sum('point'),
+            'total_score' => $this->calculateTotalScore($answers->sum('point'))
+        ];
+        $answers = $answers->map(function ($answer) {
+            return [
+                'answer_id' => $answer->id,
+                'questions_id' => $answer->questions_id,
+                'choice_id' => $answer->choice_id ?? null,
+                'essay_answer' => $answer->essay_answer ?? null,
+                'point' => $answer->point, 
+            ];
+        });
+        return Inertia::render('Admin/Questionnaire/Result/Show', [
+            'title' => 'Detail Hasil Kuesioner',
+            'description' => 'Isi pekerjaan dalam menyelesaikan quiz',
+            'meta_information' => $meta_information,
+            'answers' => $answers,
+            'questions' => $questions
+        ]);
+    }
+
+    public function penelitiQuestionnairesResult(Request $request){
+        $search = $request->get('search', '');
+        $query = Answer::with(['participant.school', 'questionnaire'])
+            ->select('participant_id', 'questionnaire_id')
+            ->selectRaw('SUM(point) as total_points')
+            ->selectRaw('COUNT(CASE WHEN point IS NULL THEN 1 END) as null_points_count')
+            ->groupBy('participant_id', 'questionnaire_id');
+
+        if (!empty($search)) {
+            $query->whereHas('participant', function ($q) use ($search) {
+                $q->where('fullname', 'LIKE', "%{$search}%");
+            })->orWhereHas('participant.school', function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%");
+            });
+        }
+        $paginatedResults = $query->paginate(10);
+        // Racik ulang 😁
+        $transformedData = $paginatedResults->through(function ($item) {
+            return [
+                'participant_name' => $item->participant->fullname,
+                'participant_id' => $item->participant->id,
+                'participant_class' => $item->participant->class,
+                'school_name' => $item->participant->school->name,
+                'questionnaire_name' => $item->questionnaire->name,
+                'questionnaire_id' => $item->questionnaire->id,
+                'latest_point' => $item->total_points ?? 0,
+                'need_correction' => $item->null_points_count > 0
+            ];
+        });
+        return Inertia::render('Peneliti/Questionnaire/Result/Index', [
+            'title' => 'Hasil Kuesioner',
+            'description' => 'Informasi hasil pekerjaan siswa dalam menyelesaikan quiz',
+            'answers' => $transformedData,
+            'search' => $search,
+        ]);
+    }
+
+        public function penelitiQuestionnairesResultShow($questionnaire_id, $participant_id){
+        $answers = Answer::with(['participant.school', 'questionnaire', 'question', 'choice', 'researcher'])
+            ->where('participant_id', $participant_id)
+            ->where('questionnaire_id', $questionnaire_id)
+            ->get();
+        $questions = Questions::with('choices')->where('questionnaire_id', $questionnaire_id)->get();
+        $meta_information = [
+            'participant_name' => $answers[0]->participant->fullname,
+            'participant_id' => $answers[0]->participant->id,
+            'participant_class' => $answers[0]->participant->class,
+            'school_name' => $answers[0]->participant->school->name,
+            'questionnaire_id' => $answers[0]->questionnaire->id,
+            'questionnaire_name' => $answers[0]->questionnaire->name,
+            'total_point' => $answers->sum('point'),
+            'total_score' => $this->calculateTotalScore($answers->sum('point'))
+        ];
+        $answers = $answers->map(function ($answer) {
+            return [
+                'answer_id' => $answer->id,
+                'questions_id' => $answer->questions_id,
+                'choice_id' => $answer->choice_id ?? null,
+                'essay_answer' => $answer->essay_answer ?? null,
+                'point' => $answer->point, 
+            ];
+        });
+        return Inertia::render('Peneliti/Questionnaire/Result/Show', [
+            'title' => 'Detail Hasil Kuesioner',
+            'description' => 'Isi pekerjaan dalam menyelesaikan quiz',
+            'meta_information' => $meta_information,
+            'answers' => $answers,
+            'questions' => $questions
+        ]);
+    }
+
+    public function penelitiQuestionnairesUpdatePoint(Request $request, $questionnaire_id, $participant_id){
+        $validated = $request->validate([
+            'essay_points' => ['required', 'array', 'min:1'],
+            'essay_points.*.question_id' => ['required', 'integer', 'exists:questions,id'],
+            'essay_points.*.point' => ['required', 'integer', 'min:0'],
+        ]);
+        $auth = Auth::user();
+        $essay_points = $validated['essay_points'];
+        foreach($essay_points as $point){
+            Answer::where('questionnaire_id', $questionnaire_id)
+                ->where('participant_id', $participant_id)
+                ->where('questions_id', $point['question_id'])
+                ->where('choice_id', null)
+                ->update(['point' => $point['point'], 'researcher_id' => $auth->id]);
+        }
+        Session::flash('success', 'Point essay berhasil diperbarui');
+        return Inertia::location('/peneliti/result');
     }
 
     public function adminDestroy($id)

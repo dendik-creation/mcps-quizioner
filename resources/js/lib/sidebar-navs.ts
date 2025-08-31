@@ -64,7 +64,7 @@ const adminSidebarNavs: NavItems = [
     },
     {
         title: "Hasil Kuis",
-        url: "/admin/questionnaire-result",
+        url: "/admin/result",
         icon: LaptopMinimalCheck,
         type: "item",
     },
@@ -79,14 +79,26 @@ const adminSidebarNavs: NavItems = [
 const penelitiSidebarNavs: NavItems = [
     {
         title: "Dashboard",
-        url: "/dashboard",
+        url: "/peneliti/dashboard",
         icon: Grid2X2,
         type: "item",
     },
     {
-        title: "Master Data",
+        title: "Kuisioner",
         type: "splitter",
         url: "#",
+    },
+    {
+        title: "Siswa",
+        url: "/peneliti/participant",
+        icon: GraduationCap,
+        type: "item",
+    },
+    {
+        title: "Hasil Kuis",
+        url: "/peneliti/result",
+        icon: LaptopMinimalCheck,
+        type: "item",
     },
 ];
 

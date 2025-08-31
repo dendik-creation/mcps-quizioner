@@ -1,0 +1,25 @@
+name: Deploy to Staging Server Area
+on:
+  push:
+    branches:
+      - stage
+jobs:
+  FTP-Deploy-Action:
+    name: FTP-Deploy-Action
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.1.0
+        with:
+          fetch-depth: 2
+      # Deploy to cPanel
+      - name: FTP-Deploy-Action
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_DEMO_SERVER }}
+          username: ${{ secrets.FTP_DEMO_USER }}
+          password: ${{ secrets.FTP_DEMO_PASSWORD }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/public/**
