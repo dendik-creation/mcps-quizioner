@@ -15,7 +15,7 @@ class SettingSeeder extends Seeder
     {
         Settings::create([
             'app_name' => "Mathematic Creative Problem Solving",
-            "questionnary_time" => 120
+            "questionnary_time" => 120,
         ]);
     }
 }
