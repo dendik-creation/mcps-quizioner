@@ -19,9 +19,11 @@ Route::middleware('guest')->group(function () {
     // Registration
     Route::get('/auth/register', [AuthController::class, 'registerView'])->name('register');
     Route::post('/auth/register', [AuthController::class, 'registerStore']);
+    Route::post('/auth/unregister', [AuthController::class, 'unregisterStore']);
 });
 
 Route::middleware(['participant', 'answering'])->group(function () {
+
     Route::get('/guide', [QuestionnairesController::class, 'guide'])->name('guide');
     Route::get('/demo', [QuestionnairesController::class, 'demo'])->name('demo');
     Route::get('/kuisioner', [ParticipantController::class, 'kuisioner'])->name('kuisioner');

@@ -256,11 +256,7 @@ class QuestionnairesController extends Controller
                 ]);
             }
 
-            session(['answers' => null]);
-            session(['participant_id' => null]);
-
-            Session::flash('success', 'Kuesioner berhasil disimpan');
-            return Inertia::location('/');
+            return Session::flash('success', 'Kuesioner berhasil disimpan');
         } catch (\Exception $e) {
             return Session::flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }

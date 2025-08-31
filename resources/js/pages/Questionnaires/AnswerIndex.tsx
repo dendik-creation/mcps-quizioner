@@ -19,12 +19,12 @@ interface ChoiceAnswer {
     choices: number[];
 }
 
-interface EssayAnswer {
-    index: number;
-    questionId: number;
-    essay: string;
+class EssayAnswerClass {
+    index!: number;
+    questionId!: number;
+    essay: string = "<p><br></p>";
 }
-
+interface EssayAnswer extends EssayAnswerClass {}
 export default function AnswerIndex({
     app_name,
     questionnaire,
@@ -55,7 +55,7 @@ export default function AnswerIndex({
             : questionnaire.questions.map((q, index) => ({
                   index,
                   questionId: q.id,
-                  essay: "",
+                  essay: "<p><br></p>",
               }));
     });
 
@@ -66,7 +66,7 @@ export default function AnswerIndex({
 
     const [timeLeft, setTimeLeft] = useState(() => {
         const saved = localStorage.getItem("timeLeft");
-        return saved ? Number(saved) : setting?.questionnary_time ?? 600;
+        return saved && saved !== "0" ? Number(saved) : setting?.questionnary_time ?? 600;
     });
 
     const maxChoice = 2;
@@ -89,10 +89,13 @@ export default function AnswerIndex({
 
     useEffect(() => {
         if (timeLeft === 0) {
-            handleAnswer();
             return;
         }
-        const timer = setInterval(() => setTimeLeft((t) => t - 1), 1000);
+
+        const timer = setInterval(() => {
+            setTimeLeft((t) => t - 1);
+            if (timeLeft === 0) handleAnswer();
+        }, 1000);
         return () => clearInterval(timer);
     }, [timeLeft]);
 
@@ -117,15 +120,6 @@ export default function AnswerIndex({
         setEssayAnswers((prev) =>
             prev.map((ans) =>
                 ans.index === index ? { ...ans, essay: content } : ans
-            )
-        );
-
-        localStorage.setItem(
-            "essayAnswers",
-            JSON.stringify(
-                essayAnswers.map((ans) =>
-                    ans.index === index ? { ...ans, essay: content } : ans
-                )
             )
         );
     };
@@ -173,17 +167,37 @@ export default function AnswerIndex({
             timeLeft,
         };
 
+        localStorage.removeItem("timeLeft");
+        localStorage.removeItem("choiceAnswers");
+        localStorage.removeItem("essayAnswers");
+        localStorage.removeItem("currentQuestion");
+
         router.post(`/questionnaire/in-progress`, payload, {
             preserveScroll: true,
             onError: (errors) => {
                 return BlastToaster("error", errors.message);
             },
-
             onSuccess: () => {
-                localStorage.removeItem("timeLeft");
-                localStorage.removeItem("choiceAnswers");
-                localStorage.removeItem("essayAnswers");
-                localStorage.removeItem("currentQuestion");
+                setCurrentQuestion(0);
+                setChoiceAnswers([]);
+                setEssayAnswers([]);
+                setCurrentQuestion(0);
+                setTimeLeft(0);
+                setTimeout(() => {
+                    router.post(
+                        "/auth/unregister",
+                        {},
+                        {
+                            preserveScroll: true,
+                            onError: (errors) => {
+                                BlastToaster("error", errors.message);
+                            },
+                            onSuccess: () => {
+                                BlastToaster("success", "Berhasil keluar");
+                            },
+                        }
+                    );
+                }, 1000);
             },
         });
     };
