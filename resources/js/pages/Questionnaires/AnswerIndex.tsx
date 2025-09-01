@@ -68,7 +68,7 @@ export default function AnswerIndex({
         const saved = localStorage.getItem("timeLeft");
         return saved && saved !== "0"
             ? Number(saved)
-            : setting?.questionnary_time ?? 600;
+            : (setting?.questionnary_time ?? 10) * 60;
     });
 
     const maxChoice = 2;

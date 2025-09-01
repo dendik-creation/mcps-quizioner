@@ -9,9 +9,8 @@ use App\Models\Schools;
 use App\Models\Participant;
 use Illuminate\Http\Request;
 use App\Models\Questionnaires;
-use function PHPSTORM_META\map;
 use App\Http\Controllers\Controller;
-
+use App\Models\Settings;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -76,6 +75,7 @@ class AuthController extends Controller
         }
 
         $schools = Schools::all();
+        $setting = Settings::first();
         $schools = $schools->map(function ($school) {
             return [
                 'value' => $school->id,
@@ -83,7 +83,7 @@ class AuthController extends Controller
             ];
         });
         return Inertia::render('Auth/Registration', [
-            'app_name' => config('app.name'),
+            'app_name' => $setting->app_name,
             'schools' => $schools
         ]);
     }
@@ -109,8 +109,13 @@ class AuthController extends Controller
             ]
         );
 
-        $isAnwers = Participant::where('nisn', $request->nisn)->first();
-        if ($isAnwers) {
+        $participant = Participant::where('nisn', $request->nisn)->first();
+        $active_questionnaire = Questionnaires::where('is_open', true)->first();
+        $answered_questionnaire = Answer::where('participant_id', $participant?->id)
+            ->where('questionnaire_id', $active_questionnaire?->id)
+            ->exists();
+        
+        if($answered_questionnaire){
             return Session::flash('error', 'Anda sudah mengisi kuisioner');
         }
 
