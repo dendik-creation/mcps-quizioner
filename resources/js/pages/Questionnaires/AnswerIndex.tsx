@@ -39,7 +39,7 @@ export default function AnswerIndex({
 
     const [choiceAnswers, setChoiceAnswers] = useState<ChoiceAnswer[]>(() => {
         const saved = localStorage.getItem("choiceAnswers");
-        return saved
+        return saved && saved !== "[]"
             ? JSON.parse(saved)
             : questionnaire.questions.map((q, index) => ({
                   index,
@@ -50,7 +50,7 @@ export default function AnswerIndex({
 
     const [essayAnswers, setEssayAnswers] = useState<EssayAnswer[]>(() => {
         const saved = localStorage.getItem("essayAnswers");
-        return saved
+        return saved && saved !== "[]"
             ? JSON.parse(saved)
             : questionnaire.questions.map((q, index) => ({
                   index,
@@ -66,7 +66,9 @@ export default function AnswerIndex({
 
     const [timeLeft, setTimeLeft] = useState(() => {
         const saved = localStorage.getItem("timeLeft");
-        return saved && saved !== "0" ? Number(saved) : setting?.questionnary_time ?? 600;
+        return saved && saved !== "0"
+            ? Number(saved)
+            : setting?.questionnary_time ?? 600;
     });
 
     const maxChoice = 2;
@@ -167,11 +169,6 @@ export default function AnswerIndex({
             timeLeft,
         };
 
-        localStorage.removeItem("timeLeft");
-        localStorage.removeItem("choiceAnswers");
-        localStorage.removeItem("essayAnswers");
-        localStorage.removeItem("currentQuestion");
-
         router.post(`/questionnaire/in-progress`, payload, {
             preserveScroll: true,
             onError: (errors) => {
@@ -183,6 +180,12 @@ export default function AnswerIndex({
                 setEssayAnswers([]);
                 setCurrentQuestion(0);
                 setTimeLeft(0);
+
+                localStorage.removeItem("timeLeft");
+                localStorage.removeItem("choiceAnswers");
+                localStorage.removeItem("essayAnswers");
+                localStorage.removeItem("currentQuestion");
+
                 setTimeout(() => {
                     router.post(
                         "/auth/unregister",
