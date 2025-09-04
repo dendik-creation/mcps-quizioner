@@ -55,13 +55,23 @@ const QuestionnaireResultIndex = ({
         <AppLayout>
             <PageTitle title={title} description={description} />
 
-            <div className="mb-4">
+            <div className="flex justify-between items-center mb-4">
                 <SearchInput
                     placeholder={`Cari nama siswa atau asal sekolah`}
                     className="lg:max-w-sm w-full"
                     onChange={handleSearch}
                     value={searchValue || ""}
                 />
+                <Button
+                    variant={"green"}
+                    className="flex items-center gap-2"
+                    onClick={() => {
+                        window.open(`/peneliti/result/print-all`, "_blank");
+                    }}
+                >
+                    <Printer />
+                    <span>Print</span>
+                </Button>
             </div>
 
             <div className="rounded-md border">
@@ -142,6 +152,12 @@ const QuestionnaireResultIndex = ({
                                             <Button
                                                 variant={"green"}
                                                 size={"icon"}
+                                                onClick={() => {
+                                                    window.open(
+                                                        `/peneliti/result/print/${answer.questionnaire_id}/${answer.participant_id}`,
+                                                        "_blank"
+                                                    );
+                                                }}
                                             >
                                                 <Printer />
                                             </Button>

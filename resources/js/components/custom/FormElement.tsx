@@ -30,7 +30,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import ReactQuill from "react-quill";
+import ReactQuill from 'react-quill';
 import "react-quill/dist/quill.snow.css";
 import { SelectOption } from "@/types/global";
 

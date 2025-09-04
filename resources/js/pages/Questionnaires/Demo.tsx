@@ -96,6 +96,7 @@ export default function Demo({ app_name }: { app_name: string }) {
     const handleEssayChange = (content: string) => {
         const updated = [...essayAnswers];
         updated[currentQuestion] = content;
+        console.log(updated);
         setEssayAnswers(updated);
     };
 

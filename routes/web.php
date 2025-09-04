@@ -61,21 +61,28 @@ Route::middleware('auth')->group(function () {
         // Questionnaires Result
         Route::get('/result', [QuestionnairesController::class, 'adminQuestionnairesResult']);
         Route::get('/result/{questionnaire_id}/{participant_id}', [QuestionnairesController::class, 'adminQuestionnairesResultShow']);
-        
+
+        Route::get('/result/print/{questionnaire_id}/{participant_id}', [QuestionnairesController::class, 'printQuestionnaire']);
+        Route::get('/result/print-all', [QuestionnairesController::class, 'printAllQuestionnaire']);
+
         // App Setting
         Route::get('/setting', [DashboardController::class, 'appSettingView']);
         Route::put('/setting', [DashboardController::class, 'appSettingUpdate']);
     });
-    
+
     // Peneliti
-    Route::prefix('peneliti')->middleware([penelitiRole::class])->group(function(){
+    Route::prefix('peneliti')->middleware([penelitiRole::class])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'penelitiDashboard']);
         // Participant
         Route::get('/participant', [ParticipantController::class, 'penelitiIndex']);
-        
+
         // Questionnaires Result
         Route::get('/result', [QuestionnairesController::class, 'penelitiQuestionnairesResult']);
         Route::get('/result/{questionnaire_id}/{participant_id}', [QuestionnairesController::class, 'penelitiQuestionnairesResultShow']);
         Route::put('/result/{questionnaire_id}/{participant_id}', [QuestionnairesController::class, 'penelitiQuestionnairesUpdatePoint']);
+
+        Route::get('/result/print/{questionnaire_id}/{participant_id}', [QuestionnairesController::class, 'printQuestionnaire']);
+
+        Route::get('/result/print-all', [QuestionnairesController::class, 'printAllQuestionnaire']);
     });
 });
