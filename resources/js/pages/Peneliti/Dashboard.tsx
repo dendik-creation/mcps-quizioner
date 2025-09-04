@@ -70,7 +70,7 @@ const PenelitiDashboard = ({
                         <Card>
                             <CardHeader>
                                 <CardTitle className="text-lg font-semibold">
-                                    {title}
+                                    Aktivitas Kuesioner Terbaru
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>

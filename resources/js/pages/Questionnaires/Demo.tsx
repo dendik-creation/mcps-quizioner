@@ -56,7 +56,7 @@ export default function Demo({ app_name }: { app_name: string }) {
         Array(questions.length).fill([])
     );
     const [essayAnswers, setEssayAnswers] = useState<string[]>(
-        Array(questions.length).fill("")
+        Array(questions.length).fill("<p><br></p>")
     );
 
     const maxChoice = 2;
@@ -235,13 +235,9 @@ export default function Demo({ app_name }: { app_name: string }) {
                                 title="Demo Selesai"
                                 description="Anda telah menyelesaikan demo, mengerjakan kuis sekarang ?"
                                 triggerNode={
-                                    <Button
-                                        variant="green"
-                                        className="flex items-center gap-2"
-                                        type="button"
-                                    >
+                                    <div className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-600 text-white hover:bg-green-600/90 h-10 px-4 py-2 cursor-pointer">
                                         Submit
-                                    </Button>
+                                    </div>
                                 }
                                 confirmAction={handleAnswer}
                                 type="success"
