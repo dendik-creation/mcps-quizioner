@@ -19,12 +19,12 @@ interface ChoiceAnswer {
     choices: number[];
 }
 
-interface EssayAnswer {
-    index: number;
-    questionId: number;
-    essay: string;
+class EssayAnswerClass {
+    index!: number;
+    questionId!: number;
+    essay: string = "<p><br></p>";
 }
-
+interface EssayAnswer extends EssayAnswerClass {}
 export default function AnswerIndex({
     app_name,
     questionnaire,
@@ -39,7 +39,7 @@ export default function AnswerIndex({
 
     const [choiceAnswers, setChoiceAnswers] = useState<ChoiceAnswer[]>(() => {
         const saved = localStorage.getItem("choiceAnswers");
-        return saved
+        return saved && saved !== "[]"
             ? JSON.parse(saved)
             : questionnaire.questions.map((q, index) => ({
                   index,
@@ -50,12 +50,12 @@ export default function AnswerIndex({
 
     const [essayAnswers, setEssayAnswers] = useState<EssayAnswer[]>(() => {
         const saved = localStorage.getItem("essayAnswers");
-        return saved
+        return saved && saved !== "[]"
             ? JSON.parse(saved)
             : questionnaire.questions.map((q, index) => ({
                   index,
                   questionId: q.id,
-                  essay: "",
+                  essay: "<p><br></p>",
               }));
     });
 
@@ -66,7 +66,9 @@ export default function AnswerIndex({
 
     const [timeLeft, setTimeLeft] = useState(() => {
         const saved = localStorage.getItem("timeLeft");
-        return saved ? Number(saved) : setting?.questionnary_time ?? 600;
+        return saved && saved !== "0"
+            ? Number(saved)
+            : (setting?.questionnary_time ?? 10) * 60;
     });
 
     const maxChoice = 2;
@@ -89,10 +91,13 @@ export default function AnswerIndex({
 
     useEffect(() => {
         if (timeLeft === 0) {
-            handleAnswer();
             return;
         }
-        const timer = setInterval(() => setTimeLeft((t) => t - 1), 1000);
+
+        const timer = setInterval(() => {
+            setTimeLeft((t) => t - 1);
+            if (timeLeft === 0) handleAnswer();
+        }, 1000);
         return () => clearInterval(timer);
     }, [timeLeft]);
 
@@ -117,15 +122,6 @@ export default function AnswerIndex({
         setEssayAnswers((prev) =>
             prev.map((ans) =>
                 ans.index === index ? { ...ans, essay: content } : ans
-            )
-        );
-
-        localStorage.setItem(
-            "essayAnswers",
-            JSON.stringify(
-                essayAnswers.map((ans) =>
-                    ans.index === index ? { ...ans, essay: content } : ans
-                )
             )
         );
     };
@@ -178,12 +174,33 @@ export default function AnswerIndex({
             onError: (errors) => {
                 return BlastToaster("error", errors.message);
             },
-
             onSuccess: () => {
+                setCurrentQuestion(0);
+                setChoiceAnswers([]);
+                setEssayAnswers([]);
+                setCurrentQuestion(0);
+                setTimeLeft(0);
+
                 localStorage.removeItem("timeLeft");
                 localStorage.removeItem("choiceAnswers");
                 localStorage.removeItem("essayAnswers");
                 localStorage.removeItem("currentQuestion");
+
+                setTimeout(() => {
+                    router.post(
+                        "/auth/unregister",
+                        {},
+                        {
+                            preserveScroll: true,
+                            onError: (errors) => {
+                                BlastToaster("error", errors.message);
+                            },
+                            onSuccess: () => {
+                                BlastToaster("success", "Berhasil keluar");
+                            },
+                        }
+                    );
+                }, 1000);
             },
         });
     };

@@ -5,7 +5,7 @@ import {
     CalendarIcon,
     ArrowDownToLine,
 } from "lucide-react";
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import ReactQuill from "react-quill";
+import ReactQuill from 'react-quill';
 import "react-quill/dist/quill.snow.css";
 import { SelectOption } from "@/types/global";
 
@@ -297,6 +297,8 @@ export function RichTextEditorInput({
         ],
     };
 
+    const quillRef = useRef<ReactQuill>(null);
+
     const formats = [
         "header",
         "font",
@@ -330,6 +332,7 @@ export function RichTextEditorInput({
     return (
         <div className="rounded-md border overflow-hidden" style={editorStyles}>
             <ReactQuill
+                ref={quillRef}
                 theme="snow"
                 value={content}
                 onChange={onChange}

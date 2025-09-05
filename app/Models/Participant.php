@@ -14,4 +14,14 @@ class Participant extends Model
     {
         return $this->belongsTo(Schools::class, 'school_id');
     }
+
+    public function answers()
+    {
+        return $this->hasMany(Answer::class, 'participant_id');
+    }
+
+    public function questionnaire()
+    {
+        return $this->hasMany(Questionnaires::class, 'participant_id');
+    }
 }

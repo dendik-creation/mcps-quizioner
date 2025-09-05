@@ -6,16 +6,19 @@ use Inertia\Inertia;
 use App\Models\Answer;
 use App\Models\Choices;
 use App\Models\Settings;
+use App\Models\Questions;
+use App\Models\Participant;
 use Illuminate\Http\Request;
 use App\Models\Questionnaires;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
-use App\Models\Questions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class QuestionnairesController extends Controller
 {
-    private function calculateTotalScore($total_point){
+    private function calculateTotalScore($total_point)
+    {
         return $total_point / Questionnaires::MAX_POINT * 100;
     }
 
@@ -169,7 +172,8 @@ class QuestionnairesController extends Controller
         return Inertia::location('/admin/questionnaire');
     }
 
-    public function adminQuestionnairesResult(Request $request){
+    public function adminQuestionnairesResult(Request $request)
+    {
         $search = $request->get('search', '');
         $query = Answer::with(['participant.school', 'questionnaire'])
             ->select('participant_id', 'questionnaire_id')
@@ -206,7 +210,8 @@ class QuestionnairesController extends Controller
         ]);
     }
 
-    public function adminQuestionnairesResultShow($questionnaire_id, $participant_id){
+    public function adminQuestionnairesResultShow($questionnaire_id, $participant_id)
+    {
         $answers = Answer::with(['participant.school', 'questionnaire', 'question', 'choice', 'researcher'])
             ->where('participant_id', $participant_id)
             ->where('questionnaire_id', $questionnaire_id)
@@ -228,7 +233,7 @@ class QuestionnairesController extends Controller
                 'questions_id' => $answer->questions_id,
                 'choice_id' => $answer->choice_id ?? null,
                 'essay_answer' => $answer->essay_answer ?? null,
-                'point' => $answer->point, 
+                'point' => $answer->point,
             ];
         });
         return Inertia::render('Admin/Questionnaire/Result/Show', [
@@ -240,7 +245,8 @@ class QuestionnairesController extends Controller
         ]);
     }
 
-    public function penelitiQuestionnairesResult(Request $request){
+    public function penelitiQuestionnairesResult(Request $request)
+    {
         $search = $request->get('search', '');
         $query = Answer::with(['participant.school', 'questionnaire'])
             ->select('participant_id', 'questionnaire_id')
@@ -277,7 +283,8 @@ class QuestionnairesController extends Controller
         ]);
     }
 
-        public function penelitiQuestionnairesResultShow($questionnaire_id, $participant_id){
+    public function penelitiQuestionnairesResultShow($questionnaire_id, $participant_id)
+    {
         $answers = Answer::with(['participant.school', 'questionnaire', 'question', 'choice', 'researcher'])
             ->where('participant_id', $participant_id)
             ->where('questionnaire_id', $questionnaire_id)
@@ -299,7 +306,7 @@ class QuestionnairesController extends Controller
                 'questions_id' => $answer->questions_id,
                 'choice_id' => $answer->choice_id ?? null,
                 'essay_answer' => $answer->essay_answer ?? null,
-                'point' => $answer->point, 
+                'point' => $answer->point,
             ];
         });
         return Inertia::render('Peneliti/Questionnaire/Result/Show', [
@@ -311,7 +318,8 @@ class QuestionnairesController extends Controller
         ]);
     }
 
-    public function penelitiQuestionnairesUpdatePoint(Request $request, $questionnaire_id, $participant_id){
+    public function penelitiQuestionnairesUpdatePoint(Request $request, $questionnaire_id, $participant_id)
+    {
         $validated = $request->validate([
             'essay_points' => ['required', 'array', 'min:1'],
             'essay_points.*.question_id' => ['required', 'integer', 'exists:questions,id'],
@@ -319,7 +327,7 @@ class QuestionnairesController extends Controller
         ]);
         $auth = Auth::user();
         $essay_points = $validated['essay_points'];
-        foreach($essay_points as $point){
+        foreach ($essay_points as $point) {
             Answer::where('questionnaire_id', $questionnaire_id)
                 ->where('participant_id', $participant_id)
                 ->where('questions_id', $point['question_id'])
@@ -328,6 +336,40 @@ class QuestionnairesController extends Controller
         }
         Session::flash('success', 'Point essay berhasil diperbarui');
         return Inertia::location('/peneliti/result');
+    }
+
+    public function printQuestionnaire($questionnaire_id, $participant_id)
+    {
+        $participant = Participant::where('id', $participant_id)
+            ->whereHas('answers.question', function ($q) use ($questionnaire_id) {
+                $q->where('questionnaire_id', $questionnaire_id);
+            })
+            ->with([
+                'school',
+                'answers.choice',
+                'answers.researcher',
+                'answers.question.choices',
+                'answers.question.questionnaire'
+            ])
+            ->firstOrFail();
+        // dd($participant->answers);
+        $pdf = PDF::loadView('questionnaire.print_detail', compact('participant'));
+
+        return $pdf->stream('questionnaire_' . $questionnaire_id . '_participant_' . $participant->nisn . '.pdf');
+    }
+
+    public function printAllQuestionnaire()
+    {
+       $answers = Answer::with(['participant.school', 'questionnaire', 'researcher'])
+            ->select('participant_id', 'questionnaire_id')
+            ->selectRaw('MAX(researcher_id) as researcher_id')
+            ->selectRaw('SUM(point) as total_points')
+            ->selectRaw('COUNT(CASE WHEN point IS NULL THEN 1 END) as null_points_count')
+            ->groupBy('participant_id', 'questionnaire_id')->get();
+        // dd($answers);
+        $pdf = PDF::loadView('questionnaire.print', compact('answers'))->setPaper('a4', 'landscape');;
+
+        return $pdf->stream('questionnaire_all_participants.pdf');
     }
 
     public function adminDestroy($id)
@@ -423,11 +465,7 @@ class QuestionnairesController extends Controller
                 ]);
             }
 
-            session(['answers' => null]);
-            session(['participant_id' => null]);
-
-            Session::flash('success', 'Kuesioner berhasil disimpan');
-            return Inertia::location('/');
+            return Session::flash('success', 'Kuesioner berhasil disimpan');
         } catch (\Exception $e) {
             return Session::flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }

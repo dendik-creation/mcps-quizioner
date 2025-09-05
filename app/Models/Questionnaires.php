@@ -14,4 +14,9 @@ class Questionnaires extends Model
     {
         return $this->hasMany(Questions::class, 'questionnaire_id');
     }
+
+    public function answers()
+    {
+        return $this->hasMany(Answer::class, 'questionnaire_id');
+    }
 }

@@ -4,15 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Inertia\Inertia;
+use App\Models\Answer;
 use App\Models\Schools;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\Participant;
+use Illuminate\Http\Request;
+use App\Models\Questionnaires;
+use App\Http\Controllers\Controller;
+use App\Models\Settings;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
-
-use function PHPSTORM_META\map;
 
 class AuthController extends Controller
 {
@@ -74,6 +75,7 @@ class AuthController extends Controller
         }
 
         $schools = Schools::all();
+        $setting = Settings::first();
         $schools = $schools->map(function ($school) {
             return [
                 'value' => $school->id,
@@ -81,7 +83,7 @@ class AuthController extends Controller
             ];
         });
         return Inertia::render('Auth/Registration', [
-            'app_name' => config('app.name'),
+            'app_name' => $setting->app_name,
             'schools' => $schools
         ]);
     }
@@ -107,10 +109,26 @@ class AuthController extends Controller
             ]
         );
 
+        $participant = Participant::where('nisn', $request->nisn)->first();
+        $active_questionnaire = Questionnaires::where('is_open', true)->first();
+        $answered_questionnaire = Answer::where('participant_id', $participant?->id)
+            ->where('questionnaire_id', $active_questionnaire?->id)
+            ->exists();
+        
+        if($answered_questionnaire){
+            return Session::flash('error', 'Anda sudah mengisi kuisioner');
+        }
+
         $participant = Participant::create($data);
         session(['participant_id' => $participant->id]);
 
         Session::flash('success', 'Registrasi berhasil');
         return Inertia::location('/guide');
+    }
+
+    public function unregisterStore(Request $request)
+    {
+        session()->forget(['answers', 'participant_id']);
+        return Inertia::location('/');
     }
 }

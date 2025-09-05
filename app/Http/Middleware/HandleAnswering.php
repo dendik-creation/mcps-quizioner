@@ -16,6 +16,7 @@ class HandleAnswering
     public function handle(Request $request, Closure $next): Response
     {
          if (session('answers') === true) {
+            // dd(session('answers'));
             if (!$request->is('questionnaire/in-progress')) {
                 return redirect('/questionnaire/in-progress');
             }

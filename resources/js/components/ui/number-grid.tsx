@@ -23,6 +23,7 @@ export function NumberGrid({
                 return (
                     <button
                         key={number}
+                        type="button"
                         onClick={() => onSelect && onSelect(number)}
                         className={cn(
                             "w-10 h-10 flex items-center justify-center rounded-md border text-sm font-medium transition-colors",
