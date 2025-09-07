@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/tooltip";
 
 const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
-    const choiceLetters = ["A", "B", "C", "D", "E"];
+    const choiceLetters = ["A", "B", "C", "D"];
     const { data, setData, post, processing, errors, setError, clearErrors } =
         useForm({
             name: "",
@@ -249,7 +249,7 @@ const QuestionnaireCreate = ({ title, description }: PageTitleProps) => {
                                             Pertanyaan
                                         </label>
                                         <RichTextEditorInput
-                                            height={215}
+                                            height={300}
                                             content={question.question}
                                             onChange={(val) =>
                                                 handleChangeQuestion(

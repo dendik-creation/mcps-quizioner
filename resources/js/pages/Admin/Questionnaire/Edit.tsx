@@ -26,7 +26,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const choiceLetters = ["A", "B", "C", "D", "E"];
+const choiceLetters = ["A", "B", "C", "D"];
 
 type Choice = {
     id?: number | null;
@@ -74,13 +74,11 @@ const QuestionnaireEdit = ({
             deleted_questions: [],
         });
 
-    // Combine all questions for rendering
     const allQuestions: Question[] = [
         ...(data.saved_questions ?? []),
         ...(data.new_questions ?? []),
     ];
 
-    // Add new question to new_questions
     const addNewQuestion = () => {
         setData("new_questions", [
             ...data.new_questions,
@@ -94,7 +92,6 @@ const QuestionnaireEdit = ({
         ]);
     };
 
-    // Remove question, check if from saved_questions or new_questions
     const removeQuestion = (index: number) => {
         const savedCount = data.saved_questions.length;
         if (index < savedCount) {
@@ -118,7 +115,6 @@ const QuestionnaireEdit = ({
         }
     };
 
-    // Handler for changing question text
     const handleChangeQuestion = (questionIdx: number, value: string) => {
         const savedCount = data.saved_questions.length;
         if (questionIdx < savedCount) {
@@ -133,7 +129,6 @@ const QuestionnaireEdit = ({
         }
     };
 
-    // Handler for changing choice text
     const handleChangeChoice = (
         questionIdx: number,
         choiceIdx: number,
@@ -155,7 +150,6 @@ const QuestionnaireEdit = ({
         }
     };
 
-    // Handler for questionnaire name/description
     const handleChangeQuestionnaire = (
         e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
     ) => {
@@ -175,7 +169,6 @@ const QuestionnaireEdit = ({
         setData("saved_questions", newQuestions);
     };
 
-    // Validate form before submit
     const validateForm = (): boolean => {
         let valid = true;
         let hasToasterShown = false;
@@ -215,7 +208,6 @@ const QuestionnaireEdit = ({
         return valid;
     };
 
-    // Submit handler
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!validateForm()) return;
@@ -356,7 +348,7 @@ const QuestionnaireEdit = ({
                                             Pertanyaan
                                         </label>
                                         <RichTextEditorInput
-                                            height={215}
+                                            height={300}
                                             content={question.question}
                                             onChange={(val) =>
                                                 handleChangeQuestion(

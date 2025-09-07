@@ -20,16 +20,16 @@ class AnswerSeeder extends Seeder
         $participant_id = 1;
         $questionnaire = Questionnaires::first();
 
-        // Sample essay answers for each question
+        // Essay answers that match each question from QuestionnaireSeeder
         $essayAnswers = [
-            '<p>Saya memilih warna merah karena memberikan kesan energi dan semangat dalam hidup sehari-hari.</p>',
-            '<p>Membaca adalah hobi yang sangat menarik karena dapat menambah wawasan dan pengetahuan.</p>',
-            '<p>Musik pop memiliki melodi yang mudah diingat dan lirik yang relate dengan kehidupan modern.</p>',
-            '<p>Air putih adalah pilihan terbaik untuk kesehatan tubuh dan tidak mengandung kalori berlebih.</p>',
-            '<p>Sepeda adalah transportasi yang ramah lingkungan dan juga dapat digunakan untuk olahraga.</p>',
-            '<p>Apel mengandung banyak vitamin dan serat yang baik untuk kesehatan pencernaan.</p>',
-            '<p>Matematika mengajarkan logika berpikir yang sistematis dan dapat diterapkan dalam kehidupan.</p>',
-            '<p>Musim hujan memberikan kesejukan dan membuat udara menjadi lebih segar dan bersih.</p>',
+            '<p>Jakarta adalah ibu kota Indonesia yang terletak di pulau Jawa dan merupakan pusat pemerintahan negara.</p>',
+            '<p>Ir. Soekarno adalah presiden pertama Indonesia yang memimpin perjuangan kemerdekaan dan memproklamirkan kemerdekaan Indonesia.</p>',
+            '<p>Rupiah (IDR) adalah mata uang resmi Indonesia yang digunakan dalam semua transaksi di wilayah Indonesia.</p>',
+            '<p>Indonesia memiliki lebih dari 17.000 pulau yang tersebar dari Sabang sampai Merauke, menjadikannya negara kepulauan terbesar di dunia.</p>',
+            '<p>Selat Sunda adalah perairan yang memisahkan pulau Jawa dan Sumatera, menghubungkan Laut Jawa dengan Samudra Hindia.</p>',
+            '<p>Bahasa Indonesia adalah bahasa resmi dan bahasa persatuan Indonesia yang digunakan dalam komunikasi formal dan pendidikan.</p>',
+            '<p>Puncak Jaya atau Carstensz Pyramid adalah gunung tertinggi di Indonesia dengan ketinggian 4.884 meter di atas permukaan laut.</p>',
+            '<p>Indonesia merdeka pada tanggal 17 Agustus 1945 setelah diproklamirkan oleh Soekarno dan Mohammad Hatta.</p>',
         ];
 
         $questions = $questionnaire->questions()->with('choices')->get();

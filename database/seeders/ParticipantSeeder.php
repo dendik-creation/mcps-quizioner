@@ -19,11 +19,5 @@ class ParticipantSeeder extends Seeder
             'school_id' => 1,
             'class' => '12 IPS A'
         ]);
-        Participant::create([
-            'nisn' => '2222222222',
-            'fullname' => 'Abdul',
-            'school_id' => 2,
-            'class' => '12 IPA B'
-        ]);
     }
 }

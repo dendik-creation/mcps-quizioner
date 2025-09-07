@@ -21,84 +21,36 @@ class QuestionnaireSeeder extends Seeder
 
         $questions = [
             [
-                'question' => '<p><strong>1. Apa <em>warna</em> favorit Anda?</strong></p>',
-                'choices' => [
-                    ['choice' => 'Merah', 'point' => 1],
-                    ['choice' => 'Biru', 'point' => 1],
-                    ['choice' => 'Hijau', 'point' => 0],
-                    ['choice' => 'Kuning', 'point' => 0],
-                    ['choice' => 'Ungu', 'point' => 0],
-                ],
+                'question' => '<p><strong>Apa ibu kota Indonesia?</strong></p>',
+                'choices' => [['choice' => 'Jakarta', 'point' => 1], ['choice' => 'DKI Jakarta', 'point' => 1], ['choice' => 'Bandung', 'point' => 0], ['choice' => 'Surabaya', 'point' => 0]],
             ],
             [
-                'question' => '<p><strong>2. <u>Hobi</u> apa yang paling sering Anda lakukan di waktu luang?</strong></p>',
-                'choices' => [
-                    ['choice' => 'Membaca', 'point' => 1],
-                    ['choice' => 'Olahraga', 'point' => 1],
-                    ['choice' => 'Menonton TV', 'point' => 0],
-                    ['choice' => 'Bermain game', 'point' => 0],
-                    ['choice' => 'Berkebun', 'point' => 0],
-                ],
+                'question' => '<p><strong>Siapa presiden pertama Indonesia?</strong></p>',
+                'choices' => [['choice' => 'Soekarno', 'point' => 1], ['choice' => 'Ir. Soekarno', 'point' => 1], ['choice' => 'Soeharto', 'point' => 0], ['choice' => 'Habibie', 'point' => 0]],
             ],
             [
-                'question' => '<p><strong>3. <span style="background:yellow;">Apa jenis musik yang Anda sukai?</span></strong></p>',
-                'choices' => [
-                    ['choice' => 'Pop', 'point' => 1],
-                    ['choice' => 'Jazz', 'point' => 1],
-                    ['choice' => 'Dangdut', 'point' => 0],
-                    ['choice' => 'Rock', 'point' => 0],
-                    ['choice' => 'Klasik', 'point' => 0],
-                ],
+                'question' => '<p><strong>Apa nama mata uang Indonesia?</strong></p>',
+                'choices' => [['choice' => 'Rupiah', 'point' => 1], ['choice' => 'IDR', 'point' => 1], ['choice' => 'Dollar', 'point' => 0], ['choice' => 'Ringgit', 'point' => 0]],
             ],
             [
-                'question' => '<p><strong>4. <i>Minuman</i> apa yang paling sering Anda konsumsi?</strong></p>',
-                'choices' => [
-                    ['choice' => 'Air putih', 'point' => 1],
-                    ['choice' => 'Teh', 'point' => 1],
-                    ['choice' => 'Kopi', 'point' => 0],
-                    ['choice' => 'Soda', 'point' => 0],
-                    ['choice' => 'Jus buah', 'point' => 0],
-                ],
+                'question' => '<p><strong>Berapa jumlah pulau di Indonesia?</strong></p>',
+                'choices' => [['choice' => 'Lebih dari 17.000', 'point' => 1], ['choice' => '17.508', 'point' => 1], ['choice' => '10.000', 'point' => 0], ['choice' => '5.000', 'point' => 0]],
             ],
             [
-                'question' => '<p><strong>5. <span style="color:green;">Apa alat transportasi favorit Anda?</span></strong></p>',
-                'choices' => [
-                    ['choice' => 'Mobil', 'point' => 1],
-                    ['choice' => 'Sepeda', 'point' => 1],
-                    ['choice' => 'Motor', 'point' => 0],
-                    ['choice' => 'Bus', 'point' => 0],
-                    ['choice' => 'Kereta', 'point' => 0],
-                ],
+                'question' => '<p><strong>Apa nama laut yang memisahkan Jawa dan Sumatera?</strong></p>',
+                'choices' => [['choice' => 'Selat Sunda', 'point' => 1], ['choice' => 'Sunda Strait', 'point' => 1], ['choice' => 'Selat Malaka', 'point' => 0], ['choice' => 'Selat Bali', 'point' => 0]],
             ],
             [
-                'question' => '<p><strong>6. <u>Buah</u> apa yang paling Anda sukai?</strong></p>',
-                'choices' => [
-                    ['choice' => 'Apel', 'point' => 1],
-                    ['choice' => 'Pisang', 'point' => 1],
-                    ['choice' => 'Jeruk', 'point' => 0],
-                    ['choice' => 'Mangga', 'point' => 0],
-                    ['choice' => 'Semangka', 'point' => 0],
-                ],
+                'question' => '<p><strong>Apa bahasa resmi Indonesia?</strong></p>',
+                'choices' => [['choice' => 'Bahasa Indonesia', 'point' => 1], ['choice' => 'Indonesian', 'point' => 1], ['choice' => 'Bahasa Jawa', 'point' => 0], ['choice' => 'Bahasa Melayu', 'point' => 0]],
             ],
             [
-                'question' => '<p><strong>7. <span style="font-style:italic;">Apa mata pelajaran favorit Anda di sekolah?</span></strong></p>',
-                'choices' => [
-                    ['choice' => 'Matematika', 'point' => 1],
-                    ['choice' => 'Bahasa Indonesia', 'point' => 1],
-                    ['choice' => 'Sejarah', 'point' => 0],
-                    ['choice' => 'Fisika', 'point' => 0],
-                    ['choice' => 'Seni', 'point' => 0],
-                ],
+                'question' => '<p><strong>Apa nama gunung tertinggi di Indonesia?</strong></p>',
+                'choices' => [['choice' => 'Puncak Jaya', 'point' => 1], ['choice' => 'Carstensz Pyramid', 'point' => 1], ['choice' => 'Gunung Kerinci', 'point' => 0], ['choice' => 'Gunung Semeru', 'point' => 0]],
             ],
             [
-                'question' => '<p><strong>8. <span style="text-decoration:underline;">Apa musim favorit Anda?</span></strong></p>',
-                'choices' => [
-                    ['choice' => 'Musim hujan', 'point' => 1],
-                    ['choice' => 'Musim kemarau', 'point' => 1],
-                    ['choice' => 'Musim semi', 'point' => 0],
-                    ['choice' => 'Musim gugur', 'point' => 0],
-                    ['choice' => 'Musim dingin', 'point' => 0],
-                ],
+                'question' => '<p><strong>Kapan Indonesia merdeka?</strong></p>',
+                'choices' => [['choice' => '17 Agustus 1945', 'point' => 1], ['choice' => '1945', 'point' => 1], ['choice' => '17 Agustus 1944', 'point' => 0], ['choice' => '1946', 'point' => 0]],
             ],
         ];
 
