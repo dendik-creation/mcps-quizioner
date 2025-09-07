@@ -93,14 +93,13 @@ class AuthController extends Controller
         $data = $request->validate(
             [
                 'fullname' => 'required',
-                'nisn' => 'required|regex:/^[0-9]{10}$/',
+                'nisn' => 'required|numeric',
                 'school_id' => 'required|exists:schools,id',
                 'class' => 'required|max:10',
             ],
             [
                 'fullname.required' => 'Nama lengkap harus diisi',
                 'nisn.required' => 'NISN harus diisi',
-                'nisn.regex' => 'NISN harus berupa 10 digit angka',
                 'nisn.numeric' => 'NISN harus berupa angka',
                 'school_id.required' => 'Sekolah harus dipilih',
                 'school_id.exists' => 'Sekolah tidak valid',
@@ -114,7 +113,7 @@ class AuthController extends Controller
         $answered_questionnaire = Answer::where('participant_id', $participant?->id)
             ->where('questionnaire_id', $active_questionnaire?->id)
             ->exists();
-        
+
         if($answered_questionnaire){
             return Session::flash('error', 'Anda sudah mengisi kuisioner');
         }
