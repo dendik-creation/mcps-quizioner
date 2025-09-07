@@ -366,7 +366,6 @@ class QuestionnairesController extends Controller
             ->selectRaw('SUM(point) as total_points')
             ->selectRaw('COUNT(CASE WHEN point IS NULL THEN 1 END) as null_points_count')
             ->groupBy('participant_id', 'questionnaire_id')->get();
-        // dd($answers);
         $pdf = PDF::loadView('questionnaire.print', compact('answers'))->setPaper('a4', 'landscape');;
 
         return $pdf->stream('questionnaire_all_participants.pdf');

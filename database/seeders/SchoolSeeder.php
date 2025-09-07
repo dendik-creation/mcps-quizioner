@@ -14,10 +14,10 @@ class SchoolSeeder extends Seeder
     public function run(): void
     {
         Schools::create([
-            'name' => "SMP Negeri Ekspedisi 33"
+            'name' => "SMA Contoh 1"
         ]);
         Schools::create([
-            'name' => "SMP Negeri Ekspedisi 44"
+            'name' => "SMA Contoh 2"
         ]);
     }
 }
