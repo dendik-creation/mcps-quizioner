@@ -131,7 +131,10 @@
         });
     @endphp
 
-    <div class="total">Total Poin: {{ $totalPoint }}</div>
+    <div class="total">
+        <div>Total Poin: {{ $totalPoint }}</div>
+        <div>Score: {{ number_format(($totalPoint / 32) * 100, 2) }}</div>
+    </div>
 
     {{-- Daftar Pertanyaan --}}
     @foreach ($participant->answers->groupBy('question') as $i => $answersByQuestion)

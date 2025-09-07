@@ -47,34 +47,29 @@ export default function Guide({ app_name }: { app_name: string }) {
                         <div className="flex items-center gap-3">
                             <Info className="w-6 h-6 text-amber-500 mt-1" />
                             <p className="text-slate-700">
-                                Kuis ini berfokus pada <b>materi Matematika</b>{" "}
-                                untuk mengukur pemahaman dan kemampuan berhitung.
+                                Tes ini untuk mengukur kemampuan pemecahan
+                                masalah <b>kreatif matematis siswa.</b>
                             </p>
                         </div>
 
                         <div className="flex items-center gap-3">
                             <Clock className="w-6 h-6 text-amber-500 mt-1" />
                             <p className="text-slate-700">
-                                Waktu pengerjaan maksimal <b>120 menit</b>.
-                                Gunakan waktu dengan baik untuk menyelesaikan
-                                soal perhitungan.
+                                Jawaban Anda digunakan untuk <b>penilaian kemampuan</b> pemecahan masalah kreatif.
                             </p>
                         </div>
 
                         <div className="flex items-center gap-3">
                             <CheckCircle2 className="w-6 h-6 text-amber-500 mt-1" />
                             <p className="text-slate-700">
-                                Pastikan Anda menjawab{" "}
-                                <b>seluruh soal</b>, termasuk soal
-                                pilihan ganda dan esai perhitungan.
+                                Waktu pengerjaan maksimal <b>120 menit.</b> Gunakan waktu dengan baik untuk menyelesaikan soal yang diberikan.
                             </p>
                         </div>
 
                         <div className="flex items-center gap-3">
                             <Shield className="w-6 h-6 text-amber-500 mt-1" />
                             <p className="text-slate-700">
-                                Jawaban Anda akan digunakan hanya untuk
-                                keperluan evaluasi <b>kemampuan matematika</b>.
+                                Pastikan Anda <b>menjawab seluruh soal.</b> Tier 1 untuk soal pilihan ganda dan Tier 2 untuk esai.
                             </p>
                         </div>
                     </div>

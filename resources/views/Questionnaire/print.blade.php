@@ -71,6 +71,7 @@
                 <th>Kuisioner</th>
                 <th>Peneliti</th>
                 <th style="width:100px;">Poin Terbaru</th>
+                <th style="width:100px;">Score</th>
             </tr>
         </thead>
         <tbody>
@@ -83,6 +84,7 @@
                 <td>{{ $data->questionnaire->name }}</td>
                 <td>{{ $data->researcher->name ?? '-' }}</td>
                 <td class="center">{{ $data->total_points ?? '-' }}</td>
+                <td class="center">{{ number_format($data->score, 2) }}</td>
             </tr>
             @endforeach
         </tbody>
