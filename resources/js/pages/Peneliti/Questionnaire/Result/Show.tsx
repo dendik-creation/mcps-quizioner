@@ -55,7 +55,7 @@ const QuestionnaireResultShow = ({
 
     const initiateEssayPoint = () => {
         const essayAnswers = answers.filter(
-            (answer) => answer.choice_id === null
+            (answer) => answer.choice_id == null
         );
         const newEssayPoints = essayAnswers
             .filter(
@@ -77,13 +77,13 @@ const QuestionnaireResultShow = ({
 
     const handleChangeEssayPoint = (questionId: number, value: number) => {
         const existing = data.essay_points.find(
-            (item) => item.question_id === questionId
+            (item) => item.question_id == questionId
         );
         if (existing) {
             setData(
                 "essay_points",
                 data.essay_points.map((item) =>
-                    item.question_id === questionId
+                    item.question_id == questionId
                         ? { ...item, point: value }
                         : item
                 )
@@ -200,7 +200,7 @@ const QuestionnaireResultShow = ({
                                                         </div>
                                                         <div className="absolute right-0 rounded-r-md h-full flex items-center justify-center w-8">
                                                             <div className="flex items-center">
-                                                                {choice.point ===
+                                                                {choice.point ==
                                                                 1 ? (
                                                                     <CircleCheck
                                                                         size={
@@ -220,7 +220,7 @@ const QuestionnaireResultShow = ({
                                                                     "CHOICE",
                                                                     question.id,
                                                                     choice.id
-                                                                ) ===
+                                                                ) ==
                                                                     choice.id && (
                                                                     <Pin
                                                                         size={
@@ -266,10 +266,10 @@ const QuestionnaireResultShow = ({
                                                         Jawaban isian
                                                     </label>
                                                     <span className="text-sm text-slate-500">
-                                                        {essayAnswer?.point ===
+                                                        {essayAnswer?.point ==
                                                         null
                                                             ? "(belum dikoreksi)"
-                                                            : essayAnswer?.point !==
+                                                            : essayAnswer?.point !=
                                                               undefined
                                                             ? `(poin ${essayAnswer.point})`
                                                             : ""}
@@ -325,7 +325,7 @@ const QuestionnaireResultShow = ({
                                                             data.essay_points
                                                                 .find(
                                                                     (point) =>
-                                                                        point.question_id ===
+                                                                        point.question_id ==
                                                                         question.id
                                                                 )
                                                                 ?.point?.toString() ||
@@ -344,7 +344,7 @@ const QuestionnaireResultShow = ({
             <div className="w-full ">
                 <Button
                     variant={"green"}
-                    disabled={data.essay_points.length === 0 || processing}
+                    disabled={data.essay_points.length == 0 || processing}
                     size={"lg"}
                     className="flex items-center w-full gap-2"
                     onClick={handleSaveEssayPoint}
