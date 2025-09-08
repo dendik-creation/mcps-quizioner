@@ -42,7 +42,7 @@ const PieBuilder: React.FC<PieChartProps> = ({ title, data }) => {
         ],
     };
 
-    const series = data.map((item) => item.value);
+    const series: number[] = data.map((item) => item.value);
 
     return (
         <Card>
