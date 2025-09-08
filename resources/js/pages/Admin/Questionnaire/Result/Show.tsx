@@ -128,7 +128,7 @@ const QuestionnaireResultShow = ({
                                                         </div>
                                                         <div className="absolute right-0 rounded-r-md h-full flex items-center justify-center w-8">
                                                             <div className="flex items-center">
-                                                                {choice.point ===
+                                                                {choice.point ==
                                                                 1 ? (
                                                                     <CircleCheck
                                                                         size={
@@ -148,7 +148,7 @@ const QuestionnaireResultShow = ({
                                                                     "CHOICE",
                                                                     question.id,
                                                                     choice.id
-                                                                ) ===
+                                                                ) ==
                                                                     choice.id && (
                                                                     <Pin
                                                                         size={
@@ -194,7 +194,7 @@ const QuestionnaireResultShow = ({
                                                         Jawaban isian
                                                     </label>
                                                     <span className="text-sm text-slate-500">
-                                                        {essayAnswer?.point ===
+                                                        {essayAnswer?.point ==
                                                         null
                                                             ? "(belum dikoreksi)"
                                                             : essayAnswer?.point !==
