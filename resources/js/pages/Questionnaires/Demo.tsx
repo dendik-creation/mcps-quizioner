@@ -192,7 +192,7 @@ export default function Demo({ app_name }: { app_name: string }) {
                 <CardContent className="flex flex-col gap-5">
                     <div className="flex flex-col w-full">
                         <label className="text-base mb-1">
-                            Pilihan Jawaban (max 2)
+                            Jawaban Tier 1 (max 2)
                         </label>
                         <div className="flex flex-col gap-2">
                             {activeQuestion.choices.map((choice, choiceIdx) => (
@@ -211,7 +211,7 @@ export default function Demo({ app_name }: { app_name: string }) {
                         </div>
                     </div>
                     <div className="flex flex-col w-full">
-                        <label className="text-base mb-1">Jawaban Essai</label>
+                        <label className="text-base mb-1">Jawaban Tier 2</label>
                         <RichTextEditorInput
                             height={300}
                             content={essayAnswers[currentQuestion]}
@@ -233,7 +233,7 @@ export default function Demo({ app_name }: { app_name: string }) {
                         {currentQuestion === questions.length - 1 ? (
                             <ConfirmDialog
                                 title="Demo Selesai"
-                                description="Anda telah menyelesaikan demo, mengerjakan kuis sekarang ?"
+                                description="Anda telah menyelesaikan demo, mengerjakan tes sekarang ?"
                                 triggerNode={
                                     <div className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-600 text-white hover:bg-green-600/90 h-10 px-4 py-2 cursor-pointer">
                                         Submit
