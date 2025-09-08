@@ -5,7 +5,7 @@ export type Questionnaire = {
     id: number;
     name: string;
     description: string;
-    is_open: boolean;
+    is_open: boolean | number;
     questions: Question[];
 };
 

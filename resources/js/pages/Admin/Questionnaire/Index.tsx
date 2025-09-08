@@ -75,7 +75,7 @@ const QuestionnaireIndex = ({
                                             : questionnaire.description}
                                     </TableCell>
                                     <TableCell>
-                                        {questionnaire.is_open ? (
+                                        {Number(questionnaire.is_open) ? (
                                             <CircleCheck className="text-green-500" />
                                         ) : (
                                             <CircleX className="text-red-500" />
