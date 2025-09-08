@@ -11,11 +11,26 @@ import {
 import { ErrorInput, SelectSearchInput } from "@/components/custom/FormElement";
 import { Toaster } from "react-hot-toast";
 import BlastToaster from "@/components/custom/BlastToaster";
-import { DoorOpen, FilePen, GraduationCap, IdCard, Key, Loader, LogIn, User } from "lucide-react";
+import {
+    DoorOpen,
+    FilePen,
+    GraduationCap,
+    IdCard,
+    Key,
+    Loader,
+    LogIn,
+    User,
+} from "lucide-react";
 import { useEffect } from "react";
 import { removeLocalStorage } from "@/lib/local_storage";
 
-export default function Registration({ app_name, schools }: { app_name: string, schools: any[] }) {
+export default function Registration({
+    app_name,
+    schools,
+}: {
+    app_name: string;
+    schools: any[];
+}) {
     const { flash } = usePage().props as any;
     const { data, setData, post, processing, errors, setError } = useForm({
         fullname: "",
@@ -44,7 +59,8 @@ export default function Registration({ app_name, schools }: { app_name: string, 
         if (!data.nisn) setError("nisn", "Masukkan nisn");
         if (!data.school_id) setError("school_id", "Pilih sekolah");
         if (!data.class) setError("class", "Masukkan kelas");
-        if (!data.fullname || !data.nisn || !data.class || !data.school_id) return;
+        if (!data.fullname || !data.nisn || !data.class || !data.school_id)
+            return;
 
         post("/auth/register", {
             preserveScroll: true,
@@ -62,10 +78,10 @@ export default function Registration({ app_name, schools }: { app_name: string, 
                 <div className="w-full flex flex-col justify-center p-6">
                     <CardHeader className="p-0 mb-4">
                         <CardTitle className="text-center font-bold text-2xl">
-                            Registration
+                            Registrasi
                         </CardTitle>
                         <CardDescription className="text-center">
-                            Masukkan data diri anda untuk menjawab Kuisoner
+                            Masukkan data diri Anda untuk mengikuti tes
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="p-0">
@@ -107,9 +123,7 @@ export default function Registration({ app_name, schools }: { app_name: string, 
                                             setData("nisn", e.target.value)
                                         }
                                         className={`pl-10 py-6 ${
-                                            errors.nisn
-                                                ? "border-red-500"
-                                                : ""
+                                            errors.nisn ? "border-red-500" : ""
                                         }`}
                                     />
                                 </div>
@@ -127,7 +141,9 @@ export default function Registration({ app_name, schools }: { app_name: string, 
                                         placeholder="Pilih Sekolah"
                                         options={schools}
                                         value={data.school_id}
-                                        removeValue={() => setData("school_id", "")}
+                                        removeValue={() =>
+                                            setData("school_id", "")
+                                        }
                                         onChange={(value) =>
                                             setData("school_id", String(value))
                                         }
@@ -156,9 +172,7 @@ export default function Registration({ app_name, schools }: { app_name: string, 
                                             setData("class", e.target.value)
                                         }
                                         className={`pl-10 py-6 ${
-                                            errors.class
-                                                ? "border-red-500"
-                                                : ""
+                                            errors.class ? "border-red-500" : ""
                                         }`}
                                     />
                                 </div>

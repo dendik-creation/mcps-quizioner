@@ -290,7 +290,7 @@ export default function AnswerIndex({
                 <CardContent className="flex flex-col gap-5">
                     <div className="flex flex-col w-full">
                         <label className="text-base mb-1">
-                            Pilihan Jawaban (max {maxChoiceByQuestion})
+                            Jawaban Tier 1 (max {maxChoiceByQuestion})
                         </label>
                         <div className="flex flex-col gap-2">
                             {activeQuestion.choices.map((choice, index) => {
@@ -319,7 +319,7 @@ export default function AnswerIndex({
                     </div>
 
                     <div className="flex flex-col w-full">
-                        <label className="text-base mb-1">Jawaban Essai</label>
+                        <label className="text-base mb-1">Jawaban Tier 2</label>
                         <RichTextEditorInput
                             height={300}
                             content={
