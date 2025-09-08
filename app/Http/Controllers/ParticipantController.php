@@ -52,7 +52,7 @@ class ParticipantController extends Controller
     {
         $request->validate([
             'fullname' => 'required|string|max:50',
-            'nisn' => 'required|string|max:10|unique:participants,nisn,' . $id,
+            'nisn' => 'required|string',
             'school_id' => 'required|exists:schools,id',
             'class' => 'required|string|max:10'
         ]);

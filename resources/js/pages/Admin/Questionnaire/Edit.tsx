@@ -43,7 +43,7 @@ type Question = {
 interface FormData {
     name: string;
     description: string;
-    is_open: boolean;
+    is_open: boolean | number;
     saved_questions: Question[];
     new_questions: Omit<Question, "id">[];
     deleted_questions: number[];
@@ -58,7 +58,7 @@ const QuestionnaireEdit = ({
         useForm<FormData>({
             name: questionnaire.name ?? "",
             description: questionnaire.description ?? "",
-            is_open: questionnaire.is_open ?? false,
+            is_open: Number(questionnaire.is_open) ?? false,
             saved_questions:
                 questionnaire?.questions?.map((q) => ({
                     id: typeof q.id === "number" ? q.id : null,
