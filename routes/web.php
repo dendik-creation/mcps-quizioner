@@ -49,6 +49,9 @@ Route::middleware('auth')->group(function () {
 
         // Participant
         Route::get('/participant', [ParticipantController::class, 'adminIndex']);
+        Route::get('/participant/{participant_id}/edit', [ParticipantController::class, 'adminEdit']);
+        Route::put('/participant/{participant_id}', [ParticipantController::class, 'adminUpdate']);
+        Route::delete('/participant/{participant_id}', [ParticipantController::class, 'adminDestroy']);
 
         // Questionares
         Route::get('/questionnaire', [QuestionnairesController::class, 'adminIndex']);

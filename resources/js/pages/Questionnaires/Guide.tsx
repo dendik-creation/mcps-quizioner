@@ -35,7 +35,7 @@ export default function Guide({ app_name }: { app_name: string }) {
                 <CardHeader className="px-6 py-5 border-b bg-amber-50 rounded-t-2xl">
                     <div className="flex flex-col gap-1">
                         <h2 className="font-bold text-3xl text-amber-600">
-                            Panduan Kuisioner
+                            Panduan Tes
                         </h2>
                         <span className="text-slate-600">
                             Mohon baca instruksi berikut sebelum memulai
@@ -53,23 +53,29 @@ export default function Guide({ app_name }: { app_name: string }) {
                         </div>
 
                         <div className="flex items-center gap-3">
+                            <Shield className="w-6 h-6 text-amber-500 mt-1" />
+                            <p className="text-slate-700">
+                                Jawaban Anda digunakan untuk{" "}
+                                <b>penilaian kemampuan</b> pemecahan masalah
+                                kreatif.
+                            </p>
+                        </div>
+
+                        <div className="flex items-center gap-3">
                             <Clock className="w-6 h-6 text-amber-500 mt-1" />
                             <p className="text-slate-700">
-                                Jawaban Anda digunakan untuk <b>penilaian kemampuan</b> pemecahan masalah kreatif.
+                                Waktu pengerjaan maksimal <b>120 menit.</b>{" "}
+                                Gunakan waktu dengan baik untuk menyelesaikan
+                                soal yang diberikan.
                             </p>
                         </div>
 
                         <div className="flex items-center gap-3">
                             <CheckCircle2 className="w-6 h-6 text-amber-500 mt-1" />
                             <p className="text-slate-700">
-                                Waktu pengerjaan maksimal <b>120 menit.</b> Gunakan waktu dengan baik untuk menyelesaikan soal yang diberikan.
-                            </p>
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                            <Shield className="w-6 h-6 text-amber-500 mt-1" />
-                            <p className="text-slate-700">
-                                Pastikan Anda <b>menjawab seluruh soal.</b> Tier 1 untuk soal pilihan ganda dan Tier 2 untuk esai.
+                                Pastikan Anda <b>menjawab seluruh soal.</b> Tier
+                                1 untuk soal pilihan ganda dan Tier 2 untuk
+                                esai.
                             </p>
                         </div>
                     </div>

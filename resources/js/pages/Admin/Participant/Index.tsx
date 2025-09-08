@@ -12,8 +12,11 @@ import {
 import React, { useState } from "react";
 import NotFoundInTable from "@/components/custom/NotFoundInTable";
 import { PaginatorBuilder, SearchInput } from "@/components/custom/FormElement";
-import { router } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import { inputDebounce } from "@/components/helper/input_debounce";
+import { Button } from "@/components/ui/button";
+import { Pencil, Trash2 } from "lucide-react";
+import ConfirmDialog from "@/components/custom/ConfirmDialog";
 
 const ParticipantIndex = ({
     title,
@@ -43,6 +46,10 @@ const ParticipantIndex = ({
         const value = e.target.value;
         setSearchValue(value);
         debouncedSearch(value);
+    };
+
+    const handleDeleteParticipant = (id: number) => {
+        router.delete(`/admin/participant/${id}`);
     };
     return (
         <AppLayout>
@@ -76,6 +83,9 @@ const ParticipantIndex = ({
                             <TableHead className="bg-amber-200 font-semibold">
                                 Kelas
                             </TableHead>
+                            <TableHead className="bg-amber-200 font-semibold">
+                                Aksi
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -91,6 +101,42 @@ const ParticipantIndex = ({
                                         {participant.school?.name}
                                     </TableCell>
                                     <TableCell>{participant.class}</TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            <Link
+                                                href={`/admin/participant/${participant.id}/edit`}
+                                            >
+                                                <Button
+                                                    variant={"blue"}
+                                                    size={"icon"}
+                                                    type="button"
+                                                >
+                                                    <Pencil />
+                                                </Button>
+                                            </Link>
+                                            <ConfirmDialog
+                                                title="Hapus Siswa"
+                                                description={`Menghapus siswa menyebabkan hilangnya histori jawaban kuis/tes yang telah ada. Apakah yakin?`}
+                                                triggerNode={
+                                                    <span>
+                                                        <Button
+                                                            type="button"
+                                                            variant={"red"}
+                                                            size={"icon"}
+                                                        >
+                                                            <Trash2 />
+                                                        </Button>
+                                                    </span>
+                                                }
+                                                type="danger"
+                                                confirmAction={() =>
+                                                    handleDeleteParticipant(
+                                                        participant.id as number
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                    </TableCell>
                                 </TableRow>
                             ))
                         ) : (
