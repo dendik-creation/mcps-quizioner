@@ -36,14 +36,14 @@ const QuestionnaireResultShow = ({
         if (target == "CHOICE") {
             const answer = answers.find(
                 (answer) =>
-                    answer.questions_id == questions_id &&
-                    answer.choice_id == choice_id
+                    Number(answer.questions_id) == Number(questions_id) &&
+                    Number(answer.choice_id) == Number(choice_id)
             );
             return answer?.choice_id;
         } else if (target == "ESSAY") {
             const answer = answers.find(
                 (answer) =>
-                    answer.questions_id == questions_id &&
+                    Number(answer.questions_id) == Number(questions_id) &&
                     answer.choice_id == null
             );
             return answer;

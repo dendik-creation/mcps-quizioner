@@ -103,7 +103,7 @@ export default function AnswerIndex({
 
     const activeQuestion = questionnaire.questions[currentQuestion];
     const maxChoiceByQuestion = activeQuestion.choices.filter(
-        (choice) => choice.point === 1
+        (choice) => Number(choice.point) == 1
     ).length;
 
     const toggleSelectChoice = (index: number, choiceId: number) => {
