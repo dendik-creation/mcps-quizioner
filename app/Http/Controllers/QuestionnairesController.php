@@ -19,7 +19,7 @@ class QuestionnairesController extends Controller
 {
     private function calculateTotalScore($total_point)
     {
-        return $total_point / Questionnaires::MAX_POINT * 100;
+        return ($total_point / Questionnaires::MAX_POINT) * 100;
     }
 
     public function adminIndex()
@@ -122,7 +122,6 @@ class QuestionnairesController extends Controller
             'is_open' => $validated['is_open'],
         ]);
 
-
         // Update questions
         if (!empty($validated['saved_questions'])) {
             foreach ($validated['saved_questions'] as $questionData) {
@@ -182,11 +181,16 @@ class QuestionnairesController extends Controller
             ->groupBy('participant_id', 'questionnaire_id');
 
         if (!empty($search)) {
-            $query->whereHas('participant', function ($q) use ($search) {
-                $q->where('fullname', 'LIKE', "%{$search}%");
-            })->orWhereHas('participant.school', function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%");
-            });
+            $query
+                ->whereHas('participant', function ($q) use ($search) {
+                    $q->where('fullname', 'LIKE', "%{$search}%");
+                })
+                ->orWhereHas('participant.school', function ($q) use ($search) {
+                    $q->where('name', 'LIKE', "%{$search}%");
+                })
+                ->orWhereHas('questionnaire', function ($q) use ($search) {
+                    $q->where('name', 'LIKE', "%{$search}%");
+                });
         }
         $paginatedResults = $query->paginate(10);
         // Racik ulang 😁
@@ -199,7 +203,7 @@ class QuestionnairesController extends Controller
                 'questionnaire_name' => $item->questionnaire->name,
                 'questionnaire_id' => $item->questionnaire->id,
                 'latest_point' => $item->total_points ?? 0,
-                'need_correction' => $item->null_points_count > 0
+                'need_correction' => $item->null_points_count > 0,
             ];
         });
         return Inertia::render('Admin/Questionnaire/Result/Index', [
@@ -225,7 +229,7 @@ class QuestionnairesController extends Controller
             'questionnaire_id' => $answers[0]->questionnaire->id,
             'questionnaire_name' => $answers[0]->questionnaire->name,
             'total_point' => $answers->sum('point'),
-            'total_score' => $this->calculateTotalScore($answers->sum('point'))
+            'total_score' => $this->calculateTotalScore($answers->sum('point')),
         ];
         $answers = $answers->map(function ($answer) {
             return [
@@ -241,7 +245,7 @@ class QuestionnairesController extends Controller
             'description' => 'Isi pekerjaan dalam menyelesaikan quiz',
             'meta_information' => $meta_information,
             'answers' => $answers,
-            'questions' => $questions
+            'questions' => $questions,
         ]);
     }
 
@@ -255,11 +259,16 @@ class QuestionnairesController extends Controller
             ->groupBy('participant_id', 'questionnaire_id');
 
         if (!empty($search)) {
-            $query->whereHas('participant', function ($q) use ($search) {
-                $q->where('fullname', 'LIKE', "%{$search}%");
-            })->orWhereHas('participant.school', function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%");
-            });
+            $query
+                ->whereHas('participant', function ($q) use ($search) {
+                    $q->where('fullname', 'LIKE', "%{$search}%");
+                })
+                ->orWhereHas('participant.school', function ($q) use ($search) {
+                    $q->where('name', 'LIKE', "%{$search}%");
+                })
+                ->orWhereHas('questionnaire', function ($q) use ($search) {
+                    $q->where('name', 'LIKE', "%{$search}%");
+                });
         }
         $paginatedResults = $query->paginate(10);
         // Racik ulang 😁
@@ -272,7 +281,7 @@ class QuestionnairesController extends Controller
                 'questionnaire_name' => $item->questionnaire->name,
                 'questionnaire_id' => $item->questionnaire->id,
                 'latest_point' => $item->total_points ?? 0,
-                'need_correction' => $item->null_points_count > 0
+                'need_correction' => $item->null_points_count > 0,
             ];
         });
         return Inertia::render('Peneliti/Questionnaire/Result/Index', [
@@ -298,7 +307,7 @@ class QuestionnairesController extends Controller
             'questionnaire_id' => $answers[0]->questionnaire->id,
             'questionnaire_name' => $answers[0]->questionnaire->name,
             'total_point' => $answers->sum('point'),
-            'total_score' => $this->calculateTotalScore($answers->sum('point'))
+            'total_score' => $this->calculateTotalScore($answers->sum('point')),
         ];
         $answers = $answers->map(function ($answer) {
             return [
@@ -314,7 +323,7 @@ class QuestionnairesController extends Controller
             'description' => 'Isi pekerjaan dalam menyelesaikan quiz',
             'meta_information' => $meta_information,
             'answers' => $answers,
-            'questions' => $questions
+            'questions' => $questions,
         ]);
     }
 
@@ -344,13 +353,7 @@ class QuestionnairesController extends Controller
             ->whereHas('answers.question', function ($q) use ($questionnaire_id) {
                 $q->where('questionnaire_id', $questionnaire_id);
             })
-            ->with([
-                'school',
-                'answers.choice',
-                'answers.researcher',
-                'answers.question.choices',
-                'answers.question.questionnaire'
-            ])
+            ->with(['school', 'answers.choice', 'answers.researcher', 'answers.question.choices', 'answers.question.questionnaire'])
             ->firstOrFail();
         // dd($participant->answers);
         $pdf = PDF::loadView('questionnaire.print_detail', compact('participant'));
@@ -358,16 +361,32 @@ class QuestionnairesController extends Controller
         return $pdf->stream('questionnaire_' . $questionnaire_id . '_participant_' . $participant->nisn . '.pdf');
     }
 
-    public function printAllQuestionnaire()
+    public function printAllQuestionnaire(Request $request)
     {
-       $answers = Answer::with(['participant.school', 'questionnaire', 'researcher'])
+        $search = $request->get('search', '');
+        $query = Answer::with(['participant.school', 'questionnaire', 'researcher'])
             ->select('participant_id', 'questionnaire_id')
             ->selectRaw('MAX(researcher_id) as researcher_id')
             ->selectRaw('SUM(point) as total_points')
             ->selectRaw('COUNT(CASE WHEN point IS NULL THEN 1 END) as null_points_count')
             ->selectRaw('SUM(point) / 32 * 100 as score')
-            ->groupBy('participant_id', 'questionnaire_id')->get();
-        $pdf = PDF::loadView('questionnaire.print', compact('answers'))->setPaper('a4', 'landscape');;
+            ->groupBy('participant_id', 'questionnaire_id');
+
+        if (!empty($search)) {
+            $query
+            ->whereHas('participant', function ($q) use ($search) {
+                $q->where('fullname', 'LIKE', "%{$search}%");
+            })
+            ->orWhereHas('participant.school', function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%");
+            })
+            ->orWhereHas('questionnaire', function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $answers = $query->get();
+        $pdf = PDF::loadView('questionnaire.print', compact('answers'))->setPaper('a4', 'landscape');
 
         return $pdf->stream('questionnaire_all_participants.pdf');
     }
@@ -406,9 +425,7 @@ class QuestionnairesController extends Controller
         }
 
         $setting = Settings::first();
-        $questionnaire = Questionnaires::with('questions.choices')
-            ->where('is_open', true)
-            ->first();
+        $questionnaire = Questionnaires::with('questions.choices')->where('is_open', true)->first();
 
         if (!session()->has("question_order_{$questionnaire->id}")) {
             $order = $questionnaire->questions->pluck('id')->toArray();
@@ -417,9 +434,11 @@ class QuestionnairesController extends Controller
         }
 
         $order = session("question_order_{$questionnaire->id}");
-        $questions = $questionnaire->questions->sortBy(function ($q) use ($order) {
-            return array_search($q->id, $order);
-        })->values();
+        $questions = $questionnaire->questions
+            ->sortBy(function ($q) use ($order) {
+                return array_search($q->id, $order);
+            })
+            ->values();
         $questionnaire->setRelation('questions', $questions);
 
         return Inertia::render('Questionnaires/AnswerIndex', [

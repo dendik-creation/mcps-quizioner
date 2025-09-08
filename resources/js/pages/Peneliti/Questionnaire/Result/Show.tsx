@@ -305,6 +305,10 @@ const QuestionnaireResultShow = ({
                                                                 value: "2",
                                                                 label: "2 Poin",
                                                             },
+                                                            {
+                                                                value: "3",
+                                                                label: "3 Poin",
+                                                            },
                                                         ]}
                                                         removeValue={() =>
                                                             removeEssayPoint(

@@ -57,20 +57,24 @@ const QuestionnaireResultIndex = ({
 
             <div className="flex justify-between items-center mb-4">
                 <SearchInput
-                    placeholder={`Cari nama siswa atau asal sekolah`}
+                    placeholder={`Cari nama siswa, sekolah, atau kuisioner...`}
                     className="lg:max-w-sm w-full"
                     onChange={handleSearch}
                     value={searchValue || ""}
                 />
                 <Button
+                    disabled={answers.total == 0}
                     variant={"green"}
                     className="flex items-center gap-2"
                     onClick={() => {
-                        window.open(`/peneliti/result/print-all`, "_blank");
+                        window.open(
+                            `/peneliti/result/print-all?search=${searchValue}`,
+                            "_blank"
+                        );
                     }}
                 >
                     <Printer />
-                    <span>Print</span>
+                    <span>Print semua yang ditemukan</span>
                 </Button>
             </div>
 
