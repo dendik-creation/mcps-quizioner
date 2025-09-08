@@ -71,7 +71,7 @@ export default function AnswerIndex({
             : (setting?.questionnary_time ?? 10) * 60;
     });
 
-    const maxChoice = 2;
+    // const maxChoice = 2;
 
     useEffect(() => {
         localStorage.setItem("currentQuestion", String(currentQuestion));
@@ -101,6 +101,11 @@ export default function AnswerIndex({
         return () => clearInterval(timer);
     }, [timeLeft]);
 
+    const activeQuestion = questionnaire.questions[currentQuestion];
+    const maxChoiceByQuestion = activeQuestion.choices.filter(
+        (choice) => choice.point === 1
+    ).length;
+
     const toggleSelectChoice = (index: number, choiceId: number) => {
         setChoiceAnswers((prev) =>
             prev.map((ans) =>
@@ -109,7 +114,7 @@ export default function AnswerIndex({
                           ...ans,
                           choices: ans.choices.includes(choiceId)
                               ? ans.choices.filter((id) => id !== choiceId)
-                              : ans.choices.length < maxChoice
+                              : ans.choices.length < maxChoiceByQuestion
                               ? [...ans.choices, choiceId]
                               : ans.choices,
                       }
@@ -139,8 +144,6 @@ export default function AnswerIndex({
             return hasChoice || hasEssay ? index + 1 : null; // 1-based untuk grid
         })
         .filter(Boolean) as number[];
-
-    const activeQuestion = questionnaire.questions[currentQuestion];
 
     const goNext = () => {
         if (currentQuestion < questionnaire.questions.length - 1)
@@ -262,7 +265,7 @@ export default function AnswerIndex({
                         <ClipboardList className="text-amber-600 w-7 h-7 flex-shrink-0" />
                         <div className="flex flex-col">
                             <h3 className="text-amber-600 font-semibold text-lg">
-                                {questionnaire.name || "Judul Kuis"}
+                                {questionnaire.name || "Judul Tes"}
                             </h3>
                             <p className="text-sm text-amber-600">
                                 {questionnaire.description}
@@ -287,7 +290,7 @@ export default function AnswerIndex({
                 <CardContent className="flex flex-col gap-5">
                     <div className="flex flex-col w-full">
                         <label className="text-base mb-1">
-                            Pilihan Jawaban (max 2)
+                            Pilihan Jawaban (max {maxChoiceByQuestion})
                         </label>
                         <div className="flex flex-col gap-2">
                             {activeQuestion.choices.map((choice, index) => {
