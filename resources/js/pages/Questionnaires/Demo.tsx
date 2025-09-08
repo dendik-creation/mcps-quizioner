@@ -50,6 +50,7 @@ const questions = [
 
 export default function Demo({ app_name }: { app_name: string }) {
     const { flash } = usePage().props as any;
+    const stripHtml = (str: string) => str.replace(/<[^>]*>/g, "").trim();
 
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [answers, setAnswers] = useState<number[][]>(
@@ -96,14 +97,13 @@ export default function Demo({ app_name }: { app_name: string }) {
     const handleEssayChange = (content: string) => {
         const updated = [...essayAnswers];
         updated[currentQuestion] = content;
-        console.log(updated);
         setEssayAnswers(updated);
     };
 
     const answeredQuestions = questions
         .map((q, idx) => {
             const hasChoice = answers[idx]?.length > 0;
-            const hasEssay = essayAnswers[idx]?.trim().length > 0;
+            const hasEssay = stripHtml(essayAnswers[idx]).length > 0;
             return hasChoice || hasEssay ? idx + 1 : null;
         })
         .filter(Boolean) as number[];

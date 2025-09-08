@@ -71,8 +71,6 @@ export default function AnswerIndex({
             : (setting?.questionnary_time ?? 10) * 60;
     });
 
-    // const maxChoice = 2;
-
     useEffect(() => {
         localStorage.setItem("currentQuestion", String(currentQuestion));
         localStorage.setItem("choiceAnswers", JSON.stringify(choiceAnswers));
@@ -216,7 +214,7 @@ export default function AnswerIndex({
     };
 
     return (
-        <div className="grid grid-cols-12 h-screen bg-gray-50 dark:bg-background p-4 gap-4">
+        <div className="grid grid-cols-12 h-screen bg-gray-50 dark:bg-background p-4 gap-4 overflow-hidden">
             <Toaster position={"bottom-right"} reverseOrder={false} />
 
             <Card className="col-span-12 md:col-span-2 shadow-md flex flex-col">
@@ -259,7 +257,7 @@ export default function AnswerIndex({
                 </CardContent>
             </Card>
 
-            <Card className="col-span-12 md:col-span-10 shadow-md flex flex-col">
+            <Card className="col-span-12 md:col-span-10 shadow-md flex flex-col overflow-y-auto h-screen">
                 <CardHeader>
                     <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mb-3 flex items-start gap-3">
                         <ClipboardList className="text-amber-600 w-7 h-7 flex-shrink-0" />

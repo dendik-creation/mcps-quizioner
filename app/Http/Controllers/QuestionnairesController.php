@@ -355,7 +355,7 @@ class QuestionnairesController extends Controller
             })
             ->with(['school', 'answers.choice', 'answers.researcher', 'answers.question.choices', 'answers.question.questionnaire'])
             ->firstOrFail();
-        // dd($participant->answers);
+
         $pdf = PDF::loadView('questionnaire.print_detail', compact('participant'));
 
         return $pdf->stream('questionnaire_' . $questionnaire_id . '_participant_' . $participant->nisn . '.pdf');
