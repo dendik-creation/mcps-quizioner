@@ -14,6 +14,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 class QuestionnairesController extends Controller
 {
@@ -24,7 +25,7 @@ class QuestionnairesController extends Controller
 
     public function adminIndex()
     {
-        $questionnaires = Questionnaires::with('questions')->get();
+        $questionnaires = Questionnaires::all();
         return Inertia::render('Admin/Questionnaire/Index', [
             'title' => 'Daftar Kuisioner',
             'description' => 'Halaman untuk melihat daftar kuisioner',
@@ -216,7 +217,7 @@ class QuestionnairesController extends Controller
 
     public function adminQuestionnairesResultShow($questionnaire_id, $participant_id)
     {
-        $answers = Answer::with(['participant.school', 'questionnaire', 'question', 'choice', 'researcher'])
+        $answers = Answer::with(['participant.school', 'questionnaire', 'researcher'])
             ->where('participant_id', $participant_id)
             ->where('questionnaire_id', $questionnaire_id)
             ->get();
@@ -294,7 +295,7 @@ class QuestionnairesController extends Controller
 
     public function penelitiQuestionnairesResultShow($questionnaire_id, $participant_id)
     {
-        $answers = Answer::with(['participant.school', 'questionnaire', 'question', 'choice', 'researcher'])
+        $answers = Answer::with(['participant.school', 'questionnaire', 'researcher'])
             ->where('participant_id', $participant_id)
             ->where('questionnaire_id', $questionnaire_id)
             ->get();
@@ -487,6 +488,159 @@ class QuestionnairesController extends Controller
             return Session::flash('success', 'Kuesioner berhasil disimpan');
         } catch (\Exception $e) {
             return Session::flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function uploadImage(Request $request)
+    {
+        try {
+            $request->validate([
+                'image' => 'required|string', // Base64 string
+                'filename' => 'string|nullable'
+            ]);
+
+            $base64Image = $request->input('image');
+            $filename = $request->input('filename', 'questionnaire_' . time() . '_' . uniqid());
+
+            // Check if it's a valid base64 image
+            if (!preg_match('/^data:image\/(\w+);base64,/', $base64Image, $matches)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid image format'
+                ], 400);
+            }
+
+            $imageType = $matches[1]; // jpg, png, gif, etc.
+            $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
+            $base64Image = base64_decode($base64Image);
+
+            if ($base64Image === false) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to decode image'
+                ], 400);
+            }
+
+            // Validate file size (max 5MB)
+            if (strlen($base64Image) > 5 * 1024 * 1024) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Image size too large (max 5MB)'
+                ], 400);
+            }
+
+            // Create directory if it doesn't exist
+            $destinationPath = public_path('assets/questionnaire_imgs');
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+
+            // Generate unique filename
+            $fullFilename = $filename . '.' . $imageType;
+            $filePath = $destinationPath . '/' . $fullFilename;
+
+            // Ensure filename is unique
+            $counter = 1;
+            while (file_exists($filePath)) {
+                $fullFilename = $filename . '_' . $counter . '.' . $imageType;
+                $filePath = $destinationPath . '/' . $fullFilename;
+                $counter++;
+            }
+
+            // Save the image
+            if (file_put_contents($filePath, $base64Image) === false) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to save image'
+                ], 500);
+            }
+
+            $url = url('assets/questionnaire_imgs/' . $fullFilename);
+
+            return response()->json([
+                'success' => true,
+                'url' => $url,
+                'filename' => $fullFilename,
+                'message' => 'Image uploaded successfully'
+            ], 200);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Upload failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deleteImage(Request $request)
+    {
+        try {
+            $request->validate([
+                'src' => 'required|string',
+            ]);
+
+            $imageSrc = $request->input('src');
+            
+            // Parse the URL to get the path
+            $parsedUrl = parse_url($imageSrc);
+            
+            if (!$parsedUrl || !isset($parsedUrl['path'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid image URL'
+                ], 400);
+            }
+
+            $relativePath = $parsedUrl['path'];
+            
+            // Check if it's a questionnaire image
+            if (!str_contains($relativePath, '/assets/questionnaire_imgs/')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid image path'
+                ], 400);
+            }
+
+            // Get the absolute path
+            $absolutePath = public_path($relativePath);
+
+            // Check if file exists and delete it
+            if (file_exists($absolutePath)) {
+                if (unlink($absolutePath)) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Image deleted successfully'
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Failed to delete image file'
+                    ], 500);
+                }
+            } else {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Image not found (already deleted)'
+                ], 200);
+            }
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Delete failed: ' . $e->getMessage()
+            ], 500);
         }
     }
 }
