@@ -63,7 +63,7 @@ Route::middleware('auth')->group(function () {
 
         // Image Handler
         Route::post('/questionnaire/upload-image', [QuestionnairesController::class, 'uploadImage']);
-        Route::delete('/questionnaire/delete-image', [QuestionnairesController::class, 'deleteImage']);
+        Route::post('/questionnaire/delete-image', [QuestionnairesController::class, 'deleteImage']);
 
         // Questionnaires Result
         Route::get('/result', [QuestionnairesController::class, 'adminQuestionnairesResult']);

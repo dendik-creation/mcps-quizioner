@@ -21,3 +21,5 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+/public/assets/questionnaire_imgs/
+/public/assets/questionnaire_imgs/*
