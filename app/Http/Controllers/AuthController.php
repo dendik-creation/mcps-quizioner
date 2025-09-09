@@ -108,15 +108,16 @@ class AuthController extends Controller
             ]
         );
 
-        $participant = Participant::where('nisn', $request->nisn)->first();
-        $active_questionnaire = Questionnaires::where('is_open', true)->first();
-        $answered_questionnaire = Answer::where('participant_id', $participant?->id)
-            ->where('questionnaire_id', $active_questionnaire?->id)
-            ->exists();
+        // $participant = Participant::where('nisn', $request->nisn)->first();
+        // $active_questionnaire = Questionnaires::where('is_open', true)->first();
+        // $answered_questionnaire = Answer::where('participant_id', $participant?->id)
+        //     ->where('questionnaire_id', $active_questionnaire?->id)
+        //     ->exists();
 
-        if($answered_questionnaire){
-            return Session::flash('error', 'Anda sudah mengisi kuisioner');
-        }
+        // if($answered_questionnaire){
+        //     return Session::flash('error', 'Anda sudah mengisi kuisioner');
+        //     return Inertia::location('/auth/register');
+        // }
 
         $participant = Participant::create($data);
         session(['participant_id' => $participant->id]);
