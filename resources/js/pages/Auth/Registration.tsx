@@ -117,7 +117,7 @@ export default function Registration({
                                     </span>
                                     <Input
                                         type="text"
-                                        placeholder="NISN"
+                                        placeholder="NISN / NIS / Nomor Absensi"
                                         value={data.nisn}
                                         onChange={(e) =>
                                             setData("nisn", e.target.value)

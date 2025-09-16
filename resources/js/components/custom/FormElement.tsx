@@ -328,7 +328,7 @@ export function RichTextEditorInput({
 
                         // Upload to server
                         const response = await axios.post(
-                            "/admin/questionnaire/upload-image",
+                            "/questionnaire/upload-image",
                             {
                                 image: base64,
                                 filename: `questionnaire_${Date.now()}`,
@@ -411,7 +411,7 @@ export function RichTextEditorInput({
                 // Delete images from server (don't await to avoid blocking the UI)
                 deletedImages.forEach(async (imageUrl) => {
                     try {
-                        await axios.post("/admin/questionnaire/delete-image", {
+                        await axios.post("/questionnaire/delete-image", {
                             src: imageUrl,
                         });
                     } catch (error) {
@@ -463,7 +463,7 @@ export function RichTextEditorInput({
                             ) {
                                 try {
                                     await axios.delete(
-                                        "/admin/questionnaire/delete-image",
+                                        "/questionnaire/delete-image",
                                         {
                                             data: { src: imgSrc },
                                         }

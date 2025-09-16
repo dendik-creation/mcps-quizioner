@@ -139,7 +139,7 @@ export default function AnswerIndex({
                 ? stripHtml(essayAns.essay).length > 0
                 : false;
 
-            return hasChoice || hasEssay ? index + 1 : null; // 1-based untuk grid
+            return hasChoice && hasEssay ? index + 1 : null; // 1-based untuk grid
         })
         .filter(Boolean) as number[];
 
@@ -150,6 +150,28 @@ export default function AnswerIndex({
 
     const goBack = () => {
         if (currentQuestion > 0) setCurrentQuestion(currentQuestion - 1);
+    };
+
+    const validateAnswer = (payload: any): boolean => {
+        const choices = JSON.parse(payload.choices);
+        const essays = JSON.parse(payload.essays);
+
+        const isEssayEmpty = (essay: string) =>
+            !essay.replace(/<[^>]*>/g, "").trim() ||
+            /^(<p><br\s*\/?><\/p>)$/i.test(essay.trim());
+
+        const incomplete = choices.some(
+            (c: any, i: number) =>
+                !c.choices?.length ||
+                !essays[i]?.essay ||
+                isEssayEmpty(essays[i].essay)
+        );
+
+        if (incomplete) {
+            BlastToaster("error", "Lengkapi semua jawaban terlebih dahulu");
+            return false;
+        }
+        return true;
     };
 
     const handleAnswer = () => {
@@ -169,6 +191,8 @@ export default function AnswerIndex({
             ),
             timeLeft,
         };
+
+        if (!validateAnswer(payload)) return;
 
         router.post(`/questionnaire/in-progress`, payload, {
             preserveScroll: true,
