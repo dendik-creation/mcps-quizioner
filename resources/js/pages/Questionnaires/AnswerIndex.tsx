@@ -256,7 +256,7 @@ export default function AnswerIndex({
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex gap-4 text-sm mb-3">
+                    <div className="flex flex-wrap gap-4 text-sm mb-3">
                         <div className="flex items-center gap-2">
                             <span className="w-4 h-4 rounded-md bg-emerald-400 border border-emerald-500"></span>
                             <span>Terjawab</span>
