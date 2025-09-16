@@ -61,10 +61,6 @@ Route::middleware('auth')->group(function () {
         Route::put('/questionnaire/{questionnaire_id}', [QuestionnairesController::class, 'adminUpdate']);
         Route::delete('/questionnaire/{questionnaire_id}', [QuestionnairesController::class, 'adminDestroy']);
 
-        // Image Handler
-        Route::post('/questionnaire/upload-image', [QuestionnairesController::class, 'uploadImage']);
-        Route::post('/questionnaire/delete-image', [QuestionnairesController::class, 'deleteImage']);
-
         // Questionnaires Result
         Route::get('/result', [QuestionnairesController::class, 'adminQuestionnairesResult']);
         Route::get('/result/{questionnaire_id}/{participant_id}', [QuestionnairesController::class, 'adminQuestionnairesResultShow']);
@@ -93,3 +89,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/result/print-all', [QuestionnairesController::class, 'printAllQuestionnaire']);
     });
 });
+
+// Image Handler
+Route::post('/questionnaire/upload-image', [QuestionnairesController::class, 'uploadImage']);
+Route::post('/questionnaire/delete-image', [QuestionnairesController::class, 'deleteImage']);
