@@ -11,6 +11,7 @@ use App\Models\Participant;
 use Illuminate\Http\Request;
 use App\Models\Questionnaires;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -373,21 +374,50 @@ class QuestionnairesController extends Controller
             ->selectRaw('SUM(point) / 32 * 100 as score')
             ->groupBy('participant_id', 'questionnaire_id');
 
+        $queryDetails = Answer::select(
+            'participant_id',
+            'questionnaire_id',
+            'questions_id'
+        )
+            ->selectRaw('ROW_NUMBER() OVER (PARTITION BY participant_id, questionnaire_id ORDER BY questions_id ASC) AS soal')
+            ->selectRaw('SUM(CASE WHEN choice_id IS NOT NULL THEN point ELSE 0 END) as point_tier_1')
+            ->selectRaw('SUM(CASE WHEN choice_id IS NULL THEN point ELSE 0 END) as point_tier_2')
+            ->groupBy(
+                'participant_id',
+                'questionnaire_id',
+                'questions_id'
+            )
+            ->orderBy('questions_id', 'asc');
+
         if (!empty($search)) {
             $query
-            ->whereHas('participant', function ($q) use ($search) {
-                $q->where('fullname', 'LIKE', "%{$search}%");
-            })
-            ->orWhereHas('participant.school', function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%");
-            })
-            ->orWhereHas('questionnaire', function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%");
-            });
+                ->whereHas('participant', function ($q) use ($search) {
+                    $q->where('fullname', 'LIKE', "%{$search}%");
+                })
+                ->orWhereHas('participant.school', function ($q) use ($search) {
+                    $q->where('name', 'LIKE', "%{$search}%");
+                })
+                ->orWhereHas('questionnaire', function ($q) use ($search) {
+                    $q->where('name', 'LIKE', "%{$search}%");
+                });
+
+            $queryDetails
+                ->whereHas('participant', function ($q) use ($search) {
+                    $q->where('fullname', 'LIKE', "%{$search}%");
+                })
+                ->orWhereHas('participant.school', function ($q) use ($search) {
+                    $q->where('name', 'LIKE', "%{$search}%");
+                })
+                ->orWhereHas('questionnaire', function ($q) use ($search) {
+                    $q->where('name', 'LIKE', "%{$search}%");
+                });
         }
 
         $answers = $query->get();
-        $pdf = PDF::loadView('questionnaire.print', compact('answers'))->setPaper('a4', 'landscape');
+        $details = $queryDetails->get();
+
+
+        $pdf = PDF::loadView('questionnaire.print', compact('answers', 'details'))->setPaper('a4', 'landscape');
 
         return $pdf->stream('questionnaire_all_participants.pdf');
     }
@@ -563,7 +593,6 @@ class QuestionnairesController extends Controller
                 'filename' => $fullFilename,
                 'message' => 'Image uploaded successfully'
             ], 200);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -586,10 +615,10 @@ class QuestionnairesController extends Controller
             ]);
 
             $imageSrc = $request->input('src');
-            
+
             // Parse the URL to get the path
             $parsedUrl = parse_url($imageSrc);
-            
+
             if (!$parsedUrl || !isset($parsedUrl['path'])) {
                 return response()->json([
                     'success' => false,
@@ -598,7 +627,7 @@ class QuestionnairesController extends Controller
             }
 
             $relativePath = $parsedUrl['path'];
-            
+
             // Check if it's a questionnaire image
             if (!str_contains($relativePath, '/assets/questionnaire_imgs/')) {
                 return response()->json([
@@ -629,7 +658,6 @@ class QuestionnairesController extends Controller
                     'message' => 'Image not found (already deleted)'
                 ], 200);
             }
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,

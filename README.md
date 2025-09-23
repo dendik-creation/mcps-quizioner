@@ -34,11 +34,7 @@ MCPS is a web-based mathematical reasoning quiz application. Participants are as
     ```bash
     npm install
     ```
-7. Build frontend assets:
+7. Start the development server:
     ```bash
-    npm run dev
-    ```
-8. Start the development server:
-    ```bash
-    php artisan serve
+    php artisan serve && npm run dev
     ```
